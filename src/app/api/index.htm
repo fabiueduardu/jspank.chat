@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>JSpank.Chat</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <style>
+        .glyphicon {padding-right:10px;}
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="container body-content">
+        <h1>            
+            <h1><span class="glyphicon glyphicon-list-alt"></span>JSpank.Chat</h1>
+        </h1>
+
+        <ul class="list-group">
+            <li class="list-group-item">
+                <p><span class="glyphicon glyphicon-file"></span> <strong><a href="jspank.console.htm">/jspank.console.htm</a></strong></p>
+                <p>console to chat</p>
+            </li>
+            <li class="list-group-item disabled">
+                <p><span class="glyphicon glyphicon-file"></span> <strong><a href="jspank.me.php">/jspank.me.php</a></strong></p>
+                <p>read me chats</p>
+                <ul class="list-group">
+                    <li class="list-group-item"><span class="glyphicon glyphicon-arrow-right"></span>userid</li>
+                </ul>       
+                <ul class="list-group">
+                    <li class="list-group-item"><span class="glyphicon glyphicon-arrow-left"></span>{"dbs":["00000000-0000-0000-0000-000000000000","00000000-0000-0000-0000-000000000000"],"isvalid":true,"message":"success"}</li>
+                </ul>        
+            </li>
+                        
+            <li class="list-group-item">
+                <p><span class="glyphicon glyphicon-file"></span> <strong><a href="jspank.new.php">/jspank.new.php</a></strong></p>
+                <p>create new chat</p>
+                <ul class="list-group">
+                    <li class="list-group-item"><span class="glyphicon glyphicon-arrow-right"></span>userid</li>
+                    <li class="list-group-item"><span class="glyphicon glyphicon-arrow-right"></span>username</li>
+                </ul>       
+                <ul class="list-group">
+                    <li class="list-group-item"><span class="glyphicon glyphicon-arrow-left"></span>{userid:"00000000-0000-0000-0000-000000000000",dbid:"00000000-0000-0000-0000-000000000000",isvalid:true,message:"success"}</li>
+                </ul>        
+            </li>
+            <li class="list-group-item">
+                <p><span class="glyphicon glyphicon-file"></span> <strong><a href="jspank.post.php">/jspank.post.php</a></strong></p>
+                <p>create new post</p>
+                <ul class="list-group">
+                    <li class="list-group-item"><span class="glyphicon glyphicon-arrow-right"></span>dbid</li>
+                    <li class="list-group-item"><span class="glyphicon glyphicon-arrow-right"></span>username</li>
+                    <li class="list-group-item"><span class="glyphicon glyphicon-arrow-right"></span>username_add</li>
+                    <li class="list-group-item"><span class="glyphicon glyphicon-arrow-right"></span>username_remove</li>
+                    <li class="list-group-item"><span class="glyphicon glyphicon-arrow-right"></span>post
+                    <span class="glyphicon glyphicon-comment pull-right"></span>
+                    </li>
+                </ul>       
+                <ul class="list-group">
+                    <li class="list-group-item"><span class="glyphicon glyphicon-arrow-left"></span>{isvalid:true,message:"success"}</li>
+                </ul>            
+            </li>
+            <li class="list-group-item">
+                <p><span class="glyphicon glyphicon-file"></span> <strong><a href="jspank.get.php">/jspank.get.php</a></strong></p>
+                <p>read posts</p>
+                <ul class="list-group">
+                    <li class="list-group-item"><span class="glyphicon glyphicon-arrow-right"></span>dbid</li>
+                    <li class="list-group-item"><span class="glyphicon glyphicon-arrow-right"></span>username</li>
+                </ul>       
+                <ul class="list-group">
+                    <li class="list-group-item"><span class="glyphicon glyphicon-arrow-left"></span>{"dbid":"00000000-0000-0000-0000-000000000000","posts":[{"postid":"00","post":"your message","datecreate":"aaaa-MM-dd HH:mm:ss","username":"your name"}],"isvalid":true,"message":"success"}</li>
+                </ul>            
+            </li>
+        </ul> 
+         <a class="btn btn-success pull-right"><span class="glyphicon glyphicon-dashboard"></span>GO</a>
+       <hr>
+        <footer class="footer">
+            <p>&copy; 2016 - JSpank</p>
+        </footer>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</body>
+</html>
