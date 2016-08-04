@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>JSpank.Chat</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="container body-content">
+
+            <h1>JSpank, chat!</h1>
+            <div class="form-vertical">
+                <div class="form-group">
+                    <label class="control-label" for="dbid">dbid</label>
+                    <select id="dbid" class="form-control">
+                        <option>>>Select DB</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="text">post</label>
+                    <input type="text" class="form-control" id="post">
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="control-label" for="text">username</label>
+                            <input type="text" class="form-control" id="username" value="me">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="control-label label-success" for="text">username add</label>
+                            <input type="text" class="form-control" id="username_add">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="control-label label-danger" for="text">username remove</label>
+                            <input type="text" class="form-control" id="username_remove">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input onclick="doNew()" type="button" class="btn btn-info" value="new">
+                    <input onclick="doIt(1)" type="button" class="btn btn-success" value="post">
+                    <input onclick="doIt(0)" type="button" class="btn btn-info" value="get">
+                    <select id="autoget" class="btn btn-info">
+                         <option value="0">auto get stoped</option>
+                          <option value="1">1 seconds auto get</option>
+                           <option value="2">2 seconds auto get</option>
+                            <option value="3">3 seconds auto get</option>
+                             <option value="4">4 seconds auto get</option>
+                              <option value="5">5 seconds auto get</option>
+                              <option value="10">10 seconds auto get</option>
+                    </select>
+                </div>
+                <div class="alert alert-warning" id="alert">
+                    init a chat...
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Panel messages</div>
+                <ul class="list-group" id="message"></ul>
+            </div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script>
+       function doIt(it){
+          if(it===0) return doItGet();
+          return doItPost();
+       }
+
+       function doNew(){
+         var data  ={
+                username :  $('#username').val()
+             };
+             
+             $.post('jspank.new.php',data, function(data){
+                     meChats();
+                    $('#alert').text(data.message);
+                },'json');
+
+       }
+
+        function doItGet(){
+            var data  ={
+                dbid :  $('#dbid').val(),
+                username:  $('#username').val(),
+                postid : $('[data-postid]:last').data('postid') || 0
+             };
+
+             $('#alert').text('seeking out...');
+            $.getJSON('jspank.get.php' ,data, function(data){
+                console.log(data);
+                
+                $('#alert').text(data.message);
+                 if(data.isvalid)
+                    $(data.posts).each(function(i,v){
+                        $('#message').prepend('<li class="list-group-item" data-postid='+v.postid+'>'+v.postid +'.'+ v.post+'</li>');
+                    });
+            });
+       }
+         function doItPost(){
+             var data  ={
+                dbid :  $('#dbid').val(),
+                username:  $('#username').val(),
+                username_add:  $('#username_add').val(),
+                username_remove:  $('#username_remove').val(),
+                post :  $('#post').val()
+             };
+
+                $.post('jspank.post.php',data, function(data){
+                    console.log(data);
+                    $('#alert').text(data.message);
+                },'json');
+       }
+
+       function meChats(){
+        var $db = $('#dbid');
+            $db.empty();
+            $.getJSON('jspank.me.php',function(data){
+                $db.append('<option>>>Select DB</option>');
+                $(data.dbs).each(function(i, v){
+                    $db.append('<option value=' + v + '>' + v + '</option>');
+                });
+            });
+       }
+
+       
+       $(function(){
+            meChats();
+
+            var timeInterval = null;
+            $('#autoget').change(function(){
+                var seconds = parseInt($(this).val());
+                clearInterval(timeInterval);
+
+                if(seconds!=0)
+                      timeInterval =  setInterval(function(){ doItGet(); }, (seconds*1000));
+
+            });
+       });
+
+    </script>
+</body>
+
+</html>
