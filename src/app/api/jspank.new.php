@@ -1,28 +1,28 @@
 <?php
 include 'jspank.partial.config.php';
-include 'jspank.partial.db.php';
+include 'jspank.partial.domain.php';
 
-$userid = isset($_REQUEST['userid']) ? $_REQUEST['userid'] : newguid();
-$dbid = newguid();
+$userid = isset($_REQUEST['userid']) ? $_REQUEST['userid'] : AppService::newguid();
+$dbid = AppService::newguid();
 $username = $_REQUEST['username'];
 $description = isset($_REQUEST['description']) ? $_REQUEST['description'] : $username;
 
-$const_db = DbInstance($dbid.$const_db_extension);
+$AppService = new AppService($dbid);
+$db_result = $AppService -> init();
 
-$db_result =DbExecuteNonQuery($const_db , $queries["setting_create"]);
-$db_result =DbExecuteNonQuery($const_db , $queries["setting_insert"] , array(':settingid'=>1 ,':name' => 'version' ,':description' => '1.0'));
-$db_result =DbExecuteNonQuery($const_db , $queries["setting_insert"] , array(':settingid'=>2 ,':name' => 'userid' ,':description' => $userid));
-$db_result =DbExecuteNonQuery($const_db , $queries["setting_insert"] , array(':settingid'=>3 ,':name' => 'username' ,':description' => $username));
-$db_result =DbExecuteNonQuery($const_db , $queries["setting_insert"] , array(':settingid'=>3 ,':name' => 'description' ,':description' => $description));
+$SettingService = new SettingService($dbid);
+$db_result = $SettingService -> add(1 , 'version', '1');
+$db_result = $SettingService -> add(2 , 'userid', $userid);
+$db_result = $SettingService -> add(3 , 'username', $username);
+$db_result = $SettingService -> add(4 , 'description', $description);
 
-$db_result =DbExecuteNonQuery($const_db , $queries["user_create"]);
-$db_result =DbExecuteNonQuery($const_db , $queries["user_insert"] , array(':username' => $username ));
+$UserService = new UserService($dbid);
+$db_result = $UserService -> add($username);
 
-$db_result =DbExecuteNonQuery($const_db , $queries["post_create"]);
-$db_result =DbExecuteNonQuery($const_db , $queries["post_insert"] , array(':post' => $const_message['welcome'],':username' => $username ));
+$PostService = new PostService($dbid);
+$db_result = $PostService -> add($username, AppService::message['success']);
 
-$result = array ('dbid'=> $dbid, 'isvalid'=>$db_result,'message' => $const_message['success']);
+$result = array ('dbid'=> $dbid, 'isvalid'=>$db_result,'message' => AppService::message['success']);
 echo json_encode($result);
 
-$const_db = null;
 ?>

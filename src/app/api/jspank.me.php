@@ -1,11 +1,12 @@
 <?php
 include 'jspank.partial.config.php';
+include 'jspank.partial.domain.php';
 
-$files = glob('data/*.{db}', GLOB_BRACE);
+$files = glob('data/*', GLOB_BRACE);
 foreach($files as $file) {
-     $results[] =  str_replace("data/","",str_replace( ".db", "" ,$file));
+     $results[] =  str_replace("data/","",  $file );
 }
 
-$result = array ('dbs'=>$results, 'isvalid'=>true, 'message' => $const_message['success']);
+$result = array ('dbs'=>$results, 'isvalid'=> true, 'message' => AppService::message['success']);
 echo json_encode($result);
 ?>
