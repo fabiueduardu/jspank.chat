@@ -68,7 +68,7 @@ class UserRepository extends  Repository {
     private $queries = array(
     'user_insert'=> 'INSERT INTO user(username,datecreate)  values(:username,julianday(\'now\'));'
     ,'user_update_active'=> 'UPDATE user  SET active = :active WHERE username = :username'
-    ,'user_select_target'=> 'SELECT * FROM user WHERE username = :username and (:active is null or active = :active);'
+    ,'user_select_target'=> 'SELECT username,active,strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) FROM user WHERE username = :username and (:active is null or active = :active);'
     );
     
     function __construct($db){
@@ -91,9 +91,9 @@ class UserRepository extends  Repository {
 class PostRepository extends  Repository {
     
     private $queries = array(
-    'post_insert'=> 'INSERT INTO post(post,username,datecreate)  values(:post,:username,julianday(\'now\'));'
-    ,'post_select_foward' => 'SELECT * FROM post WHERE postid > :postid order by postid;'
-    ,'post_select_back' => 'SELECT * FROM post WHERE postid < :postid order by postid;'
+     'post_insert'=> 'INSERT INTO post(post,username,datecreate)  values(:post,:username,julianday(\'now\'));'
+    ,'post_select_foward' => 'SELECT postid,  post, username, strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) datecreate FROM post WHERE postid > :postid order by postid;'
+    ,'post_select_back' => 'SELECT postid,  post, username, strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) datecreate FROM post WHERE postid < :postid order by postid;'
     );
     
     function __construct($db){
