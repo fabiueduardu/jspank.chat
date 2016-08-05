@@ -16,207 +16,295 @@
     </style>
 </head>
 
-<body>
+<body ng-controller="chat">
     <div class="container-fluid">
         <div class="container body-content">
-            <h1>Chat!</h1>
+            <h1><span class="glyphicon glyphicon-globe"></span> JSpank.Chat</h1>
             <div class="row">
                 <div class="col-md-3">
-                    <div ng-controller="new">
-                        <form class="form-vertical" name="formNew" novalidate>
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <div class="form-group has-feedback">
-                                            <div ng-attr-class="{{isvalid && 'has-success' || 'has-error'}}">
-                                                <label class="sr-only" for="txt_username">user name</label>
-                                                <input required name="username" ng-model="username" type="text" class="form-control" placeholder="user name" ng-init="me"
-                                                />
-                                                <span ng-show="formNew.$submitted || formNew.username.$touched"> 
-                                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="isvalid && !formNew.username.$error.required"></span>
-                                                <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="!isvalid && formNew.username.$error.required"></span>
-                                                </span>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><span class="glyphicon glyphicon-plus"></span> new chat</h3>
+                        </div>
+                        <div class="panel-body">
+                            <form class="form-vertical" name="formNew" novalidate>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="form-group has-feedback">
+                                                <div ng-attr-class="{{formNew.isvalid && 'has-success' || 'has-error'}}">
+                                                    <label class="sr-only" for="new_username">user name</label>
+                                                    <input required name="new_username" ng-model="new_username" type="text" class="form-control" placeholder="user name" maxlength="100"
+                                                    />
+                                                    <span ng-show="formNew.$submitted || formNew.new_username.$touched"> 
+                                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="formNew.isvalid && !formNew.new_username.$error.required"></span>
+                                                    <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="!formNew.isvalid && formNew.new_username.$error.required"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group has-feedback">
+                                                <div ng-attr-class="{{formNew.isvalid && 'has-success' || 'has-error'}}">
+                                                    <label class="sr-only" for="new_host">hosting server</label>
+                                                    <input required name="new_host" ng-model="new_host" type="text" class="form-control" placeholder="hosting server" maxlength="2000"
+                                                    />
+                                                    <span ng-show="formNew.$submitted || formNew.new_host.$touched "> 
+                                                <span class="glyphicon glyphicon-ok form-control-feedback " ng-show="formNew.isvalid
+                                                    && !formNew.new_host.$error.required "></span>
+                                                    <span class="glyphicon glyphicon-remove form-control-feedback
+                                                    " ng-show="!formNew.isvalid && formNew.new_host.$error.required "></span>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="form-group has-feedback">
-                                            <div ng-attr-class="{{isvalid && 'has-success' || 'has-error'}}">
-                                                <label class="sr-only" for="txt_server">hosting server</label>
-                                                <input required name="host" ng-model="host" type="text" class="form-control" placeholder="hosting server" ng-init="host='http://localhost/chat/'"
-                                                />
-                                                <span ng-show="formNew.$submitted || formNew.host.$touched"> 
-                                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="isvalid && !formNew.host.$error.required"></span>
-                                                <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="!isvalid && formNew.host.$error.required"></span>
-                                                </span>
-                                            </div>
+                                        <div class="col-md-4 ">
+                                            <button class="btn btn-primary btn-block " ng-click="submitNew(formNew) ">new</button>
                                         </div>
                                     </div>
-                                    <div class="col-md-4 ">
-                                        <button class="btn btn-primary btn-block" ng-click="submit(formNew)">new</button>
+                                </div>
+                                <div class="form-group " ng-show="formNew.message ">
+                                    <div class="alert alert-danger " role="alert ">
+                                        {{formNew.message}}
                                     </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="alert alert-danger" role="alert" ng-show="message">
-                                    {{message}}
-                                </div>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
+
                     <hr/>
 
-                    <div ng-controller="me">
-                        <form class="form-vertical" name="formMe" novalidate>
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <div class="form-group has-feedback">
-                                            <div ng-attr-class="{{isvalid && 'has-success' || 'has-error'}}">
-                                                <label class="sr-only" for="myconversations">my conversations</label>
-                                                <input required name="host_myconversations" ng-model="host_myconversations" type="text" class="form-control" placeholder="my conversations"
-                                                    ng-init="host_myconversations='http://localhost/chat/jspank.me.php'" />
-                                                <span ng-show="formMe.$submitted || formMe.host_myconversations.$touched"> 
-                                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="isvalid && !formMe.host_myconversations.$error.required"></span>
-                                                <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="!isvalid && formMe.host_myconversations.$error.required"></span>
-                                                </span>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><span class="glyphicon glyphicon-align-justify"></span> read feed</h3>
+                        </div>
+                        <div class="panel-body">
+                            <form class="form-vertical " name="formMe " novalidate>
+                                <div class="form-group ">
+                                    <div class="row ">
+                                        <div class="col-md-8 ">
+                                            <div class="form-group has-feedback ">
+                                                <div ng-attr-class="{{formMe.isvalid && 'has-success' || 'has-error'}} ">
+                                                    <label class="sr-only " for="me_feed ">me feed</label>
+                                                    <input required name="me_feed " ng-model="me_feed " type="text" class="form-control " placeholder="me feed " maxlength="2000"
+                                                    />
+                                                    <span ng-show="formMe.$submitted || formMe.me_feed.$touched "> 
+                                                <span class="glyphicon glyphicon-ok form-control-feedback " ng-show="formMe.isvalid
+                                                    && !formMe.me_feed.$error.required "></span>
+                                                    <span class="glyphicon glyphicon-remove form-control-feedback
+                                                    " ng-show="!formMe.isvalid && formMe.me_feed.$error.required "></span>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4 ">
-                                        <button class="btn btn-primary btn-block" ng-click="submit(formMe)">get</button>
+                                        <div class="col-md-4 ">
+                                            <button class="btn btn-primary btn-block " ng-click="submitMe(formMe) ">get</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="alert alert-danger" role="alert" ng-show="message">
-                                    {{message}}
+                                <div class="form-group " ng-show="formMe.message ">
+                                    <div class="alert alert-danger " role="alert ">
+                                        {{formMe.message}}
+                                    </div>
                                 </div>
-                            </div>
-                        </form>
-
-                        <hr/>
-                        <div>
-                            <ul class="list-group">
-                                <li class="list-group-item" ng-repeat="item in items">
-                                    <span class="badge">{{$index}}</span>
-                                    <a ng-click="chat()">{{item}}</a>
-                                </li>
-                            </ul>
+                            </form>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-9">
-                    <div ng-controller="post">
-                        <form class="form-vertical" name="formPost" novalidate>
-                            <div class="form-group has-feedback">
-                                <div ng-attr-class="{{isvalid && 'has-success' || 'has-error'}}">
-                                    <label class="sr-only" for="path">path</label>
-                                    <input required disabled="disabled"" name="path" ng-model="path" type="text" class="form-control" placeholder="path" />
-                                    <span ng-show="formPost.$submitted || formPost.path.$touched"> 
-                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="isvalid && !formPost.path.$error.required"></span>
-                                    <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="!isvalid && formPost.path.$error.required"></span>
-                                    </span>
-                                </div>
+
+                    <hr/>
+
+                    <div class="alert " role="alert " ng-hide="me_chats.length">
+                        <span class="glyphicon glyphicon-exclamation-sign " aria-hidden="true "></span>
+                        <span class="sr-only ">notification:</span>no records found
+                    </div>
+                    <div ng-hide="!me_chats.length">
+                        <div class="panel panel-default" ng-show="post_host">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><span class="glyphicon glyphicon-cog"></span> read chat</h3>
                             </div>
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group has-feedback">
-                                            <div ng-attr-class="{{isvalid && 'has-success' || 'has-error'}}">
-                                                <label class="sr-only" for="username">user name</label>
-                                                <input required name="username" ng-model="username" type="text" class="form-control" placeholder="user name" ng-init="me"
-                                                />
-                                                <span ng-show="formPost.$submitted || formPost.username.$touched"> 
-                                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="isvalid && !formPost.username.$error.required"></span>
-                                                <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="!isvalid && formPost.username.$error.required"></span>
+                            <div class="panel-body">
+                                <form class="form-vertical " name="formGet " novalidate>
+                                    <div class="form-group ">
+                                        <div class="row ">
+                                            <div class="col-md-8 ">
+                                                <div class="form-group has-feedback ">
+                                                    <select name="post_getseconds " ng-model="post_getseconds" class="form-control">
+                                                <option value="" selected="selected">manual</option>
+                                                <option value="1 ">1 seconds</option>
+                                                <option value="3 ">3 seconds</option>
+                                                <option value="5 ">5 seconds</option>
+                                                <option value="10 ">10 seconds</option>
+                                    
+                                            </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 ">
+                                                <button type="button " class="btn btn-primary btn-block" ng-click="submitGet(formPost) ">get</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group ">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">{{post_getseconds_count}}</span>
+                                            <input type="text" class="form-control" placeholder="share" value="{{current_host_console  + '#?dbid=' + post_dbid + '&host=' + post_host + '&username='+ post_username_add }}">
+                                            <span class="input-group-addon">
+                                             <a href="{{current_host_console  + '#?dbid=' + post_dbid + '&host=' + post_host + '&username='+ post_username_add }}" class="glyphicon glyphicon-share" target="_blank" title="click to share"></a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group " ng-show="formMe.message ">
+                                        <div class="alert alert-danger " role="alert ">
+                                            {{formMe.message}}
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <ul class="list-group ">
+                            <li class="list-group-item " ng-repeat="item in me_chats ">
+                                <span class="badge hidden">{{$index}}</span>
+                                <span class="glyphicon glyphicon-comment"></span>
+                                <a href="javascript:void(0);" ng-click="submitChat(item) " title="chat">{{item.description}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-9 ">
+                    <div>
+                        <form class="form-vertical " name="formPost " novalidate ng-init="submitPreGet(this)">
+                            <div class="form-group ">
+                                <div class="row ">
+                                    <div class="col-md-4 ">
+                                        <div class="form-group has-feedback ">
+                                            <div ng-attr-class="{{formPost.isvalid && 'has-success' || 'has-error'}} ">
+                                                <label class="sr-only " for="post_dbid ">dbid</label>
+                                                <input required disabled="disabled " name="post_dbid " ng-model="post_dbid " type="text " class="form-control " placeholder="post dbid "
+                                                    maxlength="36" />
+                                                <span ng-show="formPost.$submitted || formPost.post_dbid.$touched "> 
+                                <span class="glyphicon glyphicon-ok form-control-feedback " ng-show="formPost.isvalid &&
+                                                    !formPost.post_dbid.$error.required "></span>
+                                                <span class="glyphicon glyphicon-remove form-control-feedback
+                                                    " ng-show="!formPost.isvalid && formPost.post_dbid.$error.required "></span>
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-8">
-                                        <label class="sr-only" for="username_add">user name add</label>
-                                        <input type="text" name="username_add" class="form-control" placeholder="username add" />
+                                    <div class="col-md-8 ">
+                                        <div class="form-group has-feedback ">
+                                            <div ng-attr-class="{{formPost.isvalid && 'has-success' || 'has-error'}} ">
+                                                <label class="sr-only " for="post_host ">host</label>
+                                                <input required disabled="disabled " name="post_host " ng-model="post_host" type="text " class="form-control " placeholder="post path "
+                                                    maxlength="2000" />
+                                                <span ng-show="formPost.$submitted || formPost.post_host.$touched "> 
+                                <span class="glyphicon glyphicon-ok form-control-feedback " ng-show="formPost.isvalid &&
+                                                    !formPost.post_host.$error.required "></span>
+                                                <span class="glyphicon glyphicon-remove form-control-feedback
+                                                    " ng-show="!formPost.isvalid && formPost.post_host.$error.required "></span>
+                                                </span>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <div class="form-group has-feedback">
-                                    <div ng-attr-class="{{isvalid && 'has-success' || 'has-error'}}">
-                                        <label class="sr-only" for="post">post</label>
-                                        <textarea required name="post" ng-model="username" type="text" class="form-control" rows="2" placeholder="post ..."></textarea>
-                                        <span ng-show="formPost.$submitted || formPost.post.$touched"> 
-                                                <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="isvalid && !formPost.post.$error.required"></span>
-                                        <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="!isvalid && formPost.post.$error.required"></span>
-                                        </span>
+                            <div class="form-group ">
+                                <div class="row ">
+                                    <div class="col-md-4 ">
+                                        <div class="form-group has-feedback ">
+                                            <div ng-attr-class="{{formPost.isvalid && 'has-success' || 'has-error'}} ">
+                                                <label class="sr-only " for="username ">user name</label>
+                                                <input required name="post_username " ng-model="post_username " type="text
+                                                    " class="form-control " placeholder="user name " maxlength="100" />
+                                                <span ng-show="formPost.$submitted || formPost.post_username.$touched "> 
+                                                <span class="glyphicon glyphicon-ok form-control-feedback " ng-show="formPost.isvalid
+                                                    && !formPost.post_username.$error.required "></span>
+                                                <span class="glyphicon glyphicon-remove form-control-feedback
+                                                    " ng-show="!formPost.isvalid && formPost.post_username.$error.required "></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 ">
+                                        <div class="row ">
+                                            <div class="col-md-6 ">
+                                                <label class="sr-only " for="post_username_add ">user name add</label>
+                                                <input type="text " name="post_username_add " ng-model="post_username_add" class="form-control
+                                                    " placeholder="username add " maxlength="100" />
+                                            </div>
+                                            <div class="col-md-6 ">
+                                                <label class="sr-only " for="post_username_remove ">user name remove</label>
+                                                <input type="text " name="post_username_remove " ng-model="post_username_remove" class="form-control
+                                                    " placeholder="username remove" maxlength="100" />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <button class="btn btn-primary" ng-click="submit(formPost)">send</button>
-                                <div class="pull-right">
-                                    <select id="ddl_getseconds" class="btn btn-success">
-                                <option value="0">manual</option>
-                                <option value="2">2 seconds</option>
-                                <option value="4">4 seconds</option>
-                                <option value="6">6 seconds</option>
-                                <option value="10">10 seconds</option>                                
-                            </select>
-                                    <button type="button" class="btn btn-success">get</button>
+                            <div class="form-group ">
+                                <div class="row ">
+                                    <div class="col-md-10 ">
+                                        <div class="form-group has-feedback ">
+                                            <div ng-attr-class="{{formPost.isvalid && 'has-success' || 'has-error'}} ">
+                                                <label class="sr-only " for="post_post ">post</label>
+                                                <textarea required name="post_post " ng-model="post_post " type="text " class="form-control
+                                                    " rows="2 " placeholder="post ... " maxlength="2000"></textarea>
+                                                <span ng-show="formPost.$submitted || formPost.post_post.$touched "> 
+                                                <span class="glyphicon glyphicon-ok form-control-feedback " ng-show="formPost.isvalid
+                                                    && !formPost.post_post.$error.required "></span>
+                                                <span class="glyphicon glyphicon-remove form-control-feedback " ng-show="!formPost.isvalid
+                                                    && formPost.post_post.$error.required "></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 ">
+                                        <button class="btn btn-primary btn-block" ng-click="submitPost(formPost) ">send</button>
+                                        </div>
                                 </div>
+                            </div>
+                            <div class="form-group " ng-show="formPost.message ">
+                                <div class="alert alert-danger " role="alert ">
+                                    {{formPost.message}}
+                                </div>
+                            </div>
+
+                            <hr/>
+                            <div class="panel panel-default ">
+                                <div class="panel-heading ">
+                                    <h3 class="panel-title "><span class="glyphicon glyphicon-comment"></span> Chat</h3>
+                                </div>
+                                <div class="alert" role="alert " ng-hide="me_chats_posts.length">
+                                    <span class="glyphicon glyphicon-exclamation-sign " aria-hidden="true "></span>
+                                    <span class="sr-only ">notification:</span>no records found
+                                </div>
+                                <table class="table table-striped" ng-hide="!me_chats_posts.length">
+                                    <thead class="thead-inverse">
+                                        <tr>
+                                            <td>postid</td>
+                                            <td>date</td>
+                                            <td>user</td>
+                                            <td>post</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-hover">
+                                        <tr ng-repeat="item in me_chats_posts" data-postid={{item.postid}} >
+                                            <td>{{item.postid}}</td>
+                                            <td>{{item.datecreate}}</td>
+                                            <td>{{item.username}}</td>
+                                            <td>{{item.post}}
+                                                <span ng-attr-class="{{post_username==item.username && 'glyphicon glyphicon-star pull-right' || 'glyphicon glyphicon-star-empty pull-right'}}"></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </form>
-                        <hr/>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">Chat</h3>
-                            </div>
-                            <div class="alert alert-info" role="alert">
-                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                                <span class="sr-only">notification:</span>no records found
-                            </div>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <td>date</td>
-                                        <td>user</td>
-                                        <td>post</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>dd/mm/aaaa hh:mm</td>
-                                        <td>username</td>
-                                        <td>Cras nibh mauris, porttitor eu nibh in, viverra fringilla lacus. Sed porttitor lacus
-                                            et ornare rutrum. Etiam facilisis consectetur feugiat. Pellentesque ultrices
-                                            vulputate ligula
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>dd/mm/aaaa hh:mm</td>
-                                        <td>username</td>
-                                        <td>Cras nibh mauris, porttitor eu nibh in, viverra fringilla lacus. Sed porttitor lacus
-                                            et ornare rutrum. Etiam facilisis consectetur feugiat. Pellentesque ultrices
-                                            vulputate ligula
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>dd/mm/aaaa hh:mm</td>
-                                        <td>username</td>
-                                        <td>Cras nibh mauris, porttitor eu nibh in, viverra fringilla lacus. Sed porttitor lacus
-                                            et ornare rutrum. Etiam facilisis consectetur feugiat. Pellentesque ultrices
-                                            vulputate ligula
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
-    <script src="jspank.console.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js "></script>
+    <script src="jspank.console.js "></script>
 </body>
 
 </html>
