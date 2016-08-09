@@ -25,8 +25,10 @@ if(AppService::has($dbid))
         $result = array ('isvalid' => true, 'message' => AppService::message['success']);
         
         if($username_add != null){
+            $db_maxpostid = $PostService -> getmaxpostid()[0]['postid'];
+                        
             foreach(explode(',',$username_add) as $key => $val){
-                $UserService -> add($val);
+                $UserService -> add($val , $db_maxpostid );
                 $UserService -> update_active($val, true);
             }
         }

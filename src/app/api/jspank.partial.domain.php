@@ -32,8 +32,8 @@ class Repository {
 class AppRepository extends  Repository {
     
     private $queries = array(
-    'setting_create' => 'CREATE TABLE IF NOT EXISTS setting (settingid INTEGER PRIMARY KEY NOT NULL,name VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, datecreate DATETIME NOT NULL);'
-    ,'user_create' => 'CREATE TABLE IF NOT EXISTS user (username VARCHAR(100) PRIMARY KEY NOT NULL,active BOOLEAN NOT NULL DEFAULT 1, datecreate DATETIME NOT NULL);'
+    'setting_create' => 'CREATE TABLE IF NOT EXISTS setting (settingid INTEGER PRIMARY KEY NOT NULL,name VARCHAR(100) NOT NULL, description VARCHAR(255) NOT NULL, datecreate DATETIME NOT NULL);'
+    ,'user_create' => 'CREATE TABLE IF NOT EXISTS user (username VARCHAR(100) PRIMARY KEY NOT NULL,active BOOLEAN NOT NULL DEFAULT 1, datecreate DATETIME NOT NULL,postid INTEGER NOT NULL);'
     ,'post_create' =>'CREATE TABLE IF NOT EXISTS post (postid INTEGER PRIMARY KEY AUTOINCREMENT , post VARCHAR(8000) NOT NULL, datecreate DATETIME NOT NULL, username VARCHAR(100) NOT NULL, FOREIGN KEY(username) REFERENCES user(username));'
     );
     
@@ -66,17 +66,17 @@ class SettingRepository extends  Repository {
 class UserRepository extends  Repository {
     
     private $queries = array(
-    'user_insert'=> 'INSERT INTO user(username,datecreate)  values(:username,julianday(\'now\'));'
+    'user_insert'=> 'INSERT INTO user(username,postid,datecreate)  values(:username,:postid,julianday(\'now\'));'
     ,'user_update_active'=> 'UPDATE user  SET active = :active WHERE username = :username'
-    ,'user_select_target'=> 'SELECT username,active,strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) FROM user WHERE username = :username and (:active is null or active = :active);'
+    ,'user_select_target'=> 'SELECT username,active,postid,strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) datecreate FROM user WHERE username = :username and (:active is null or active = :active);'
     );
     
     function __construct($db){
         parent::__construct($db);
     }
     
-    public function add($username){
-        return $this -> executeNonQuery($this -> queries["user_insert"] ,  array(':username' => $username));
+    public function add($username,$postid = 0){
+        return $this -> executeNonQuery($this -> queries["user_insert"] ,  array(':username' => $username, ':postid'=>$postid));
     }
     
     public function update_active($username,$active){
@@ -91,9 +91,10 @@ class UserRepository extends  Repository {
 class PostRepository extends  Repository {
     
     private $queries = array(
-     'post_insert'=> 'INSERT INTO post(post,username,datecreate)  values(:post,:username,julianday(\'now\'));'
+    'post_insert'=> 'INSERT INTO post(post,username,datecreate)  values(:post,:username,julianday(\'now\'));'
     ,'post_select_foward' => 'SELECT postid,  post, username, strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) datecreate FROM post WHERE postid > :postid order by postid;'
     ,'post_select_back' => 'SELECT postid,  post, username, strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) datecreate FROM post WHERE postid < :postid order by postid;'
+    ,'post_select_max' => 'SELECT postid FROM (SELECT MAX(postid) postid FROM post UNION ALL SELECT 0 ) r  ORDER BY postid DESC LIMIT 1;'
     );
     
     function __construct($db){
@@ -106,6 +107,10 @@ class PostRepository extends  Repository {
     
     public function get($postid , $foward = true){
         return $this -> executeReader($this -> queries[($foward ? "post_select_foward" : 'post_select_back') ] ,  array(':postid' => $postid ));
+    }
+    
+    public function getmaxpostid(){
+        return $this -> executeReader($this -> queries['post_select_max' ]);
     }
 }
 
@@ -123,15 +128,15 @@ class Service {
 class AppService extends Service {
     
     protected $repository;
-
+    
     const message = array(
-            'success' => 'success'
-            ,'error' => 'there was an error, please try again later'
-            ,'error_401' => 'error, 401 unauthorized'
-            ,'error_404' => 'error, 404 not found'
-            ,'error_500' => 'error, 500 internal server error'
-        );
-
+    'success' => 'success'
+    ,'error' => 'there was an error, please try again later'
+    ,'error_401' => 'error, 401 unauthorized'
+    ,'error_404' => 'error, 404 not found'
+    ,'error_500' => 'error, 500 internal server error'
+    );
+    
     function __construct($dbname){
         parent::__construct($dbname);
         $this -> repository = new AppRepository($this -> db);
@@ -144,7 +149,7 @@ class AppService extends Service {
     public static function has($dbname){
         return file_exists('data/'.$dbname);
     }
-
+    
     public static function newguid()
     {
         mt_srand((double)microtime()*10000);
@@ -157,11 +162,19 @@ class AppService extends Service {
         .substr($charid,20,12);
         return $uuid;
     }
-        
+    
     public static function errorHandler($errNo, $errStr, $errFile, $errLine) {
         $result = array ('isvalid'=> false, 'message' => "$errStr in $errFile on line $errLine");
         echo json_encode($result);
         die();
+    }
+    
+    public static  function validateNew(){
+        return true;
+    }
+    
+    public static  function getip(){
+        return $_SERVER['HTTP_CLIENT_IP']?:($_SERVER['HTTP_X_FORWARDE‌​D_FOR']?:$_SERVER['REMOTE_ADDR']);
     }
     
 }
@@ -189,8 +202,8 @@ class UserService extends Service {
         $this -> repository = new UserRepository($this -> db);
     }
     
-    public function add($username){
-        return $this -> repository -> add($username);
+    public function add($username,$postid=0){
+        return $this -> repository -> add($username,$postid);
     }
     
     public function update_active($username,$active){
@@ -217,6 +230,10 @@ class PostService extends Service {
     
     public function get($postid , $foward = true){
         return $this -> repository -> get($postid,$foward);
+    }
+    
+    public function getmaxpostid(){
+        return $this -> repository -> getmaxpostid();
     }
 }
 ?>

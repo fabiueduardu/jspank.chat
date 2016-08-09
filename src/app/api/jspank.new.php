@@ -2,6 +2,12 @@
 include 'jspank.partial.config.php';
 include 'jspank.partial.domain.php';
 
+if(!AppService::validateNew())
+{
+    echo json_encode(array ('isvalid'=>false,'message' => AppService::message['error']));
+    exit;
+}
+
 $userid = isset($_REQUEST['userid']) ? $_REQUEST['userid'] : AppService::newguid();
 $dbid = AppService::newguid();
 $username = $_REQUEST['username'];
