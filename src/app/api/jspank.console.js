@@ -55,6 +55,17 @@ module.controller('chat', ['$scope', '$http', '$httpParamSerializer', '$location
                     $scope.post_host = $scope.new_host;
                     $scope.post_dbid = result.data.dbid;
                     $scope.post_username = $scope.new_username;
+
+                    var target = {
+                        dbid: result.data.dbid,
+                        host: $scope.new_host,
+                        username: $scope.new_username,
+                        description: 'new chat'
+                    };
+                        $scope.submitChat(target);
+                        $scope.submitGet(form);
+                        $scope.me_chats.unshift(target);
+            
                 }
             });
     }
