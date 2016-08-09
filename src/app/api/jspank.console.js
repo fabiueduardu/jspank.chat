@@ -28,6 +28,9 @@ module.controller('chat', ['$scope', '$http', '$httpParamSerializer', '$location
     $scope.post_getseconds = '';//current seconds to get posts
     $scope.post_getseconds_count = 0;//current count gets
 
+    //### post
+    $scope.get_runner = false;
+
     //### all
     $scope.me_chats = [];
     $scope.me_chats_posts = [];
@@ -128,15 +131,19 @@ module.controller('chat', ['$scope', '$http', '$httpParamSerializer', '$location
                 });
         }
 
-        clearInterval(getsetInterval);
-        if ($scope.post_dbid && $scope.post_username) {
-            var seconds = parseInt($scope.post_getseconds);
-            if ($scope.post_getseconds) {
-                var seconds = parseInt($scope.post_getseconds);
-                getsetInterval = setInterval(function () { _get() }, (seconds * 1000));
-            } else
-                _get();
+        var seconds = parseInt($scope.post_getseconds);
+        if ($scope.get_runner) {
+            seconds = 0;
+
         }
+
+        clearInterval(getsetInterval);
+        $scope.get_runner = false;
+        if (seconds > 0)
+            getsetInterval = setInterval(function () { _get(); $scope.get_runner = true; }, (seconds * 1000));
+        else
+            _get();
+
     }
 
     $scope.submitChat = function (target) {
