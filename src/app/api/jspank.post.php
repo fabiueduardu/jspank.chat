@@ -22,7 +22,7 @@ if(AppService::has($dbid))
         $UserService = new UserService($dbid);
         
         $db_result = $PostService -> add($username, $post);
-        $result = array ('isvalid' => true, 'message' => AppService::message['success']);
+        $result = array ('dbid'=> $dbid,'isvalid' => true, 'message' => AppService::message['success']);
         
         if($username_add != null){
             $db_maxpostid = $PostService -> getmaxpostid()[0]['postid'];
