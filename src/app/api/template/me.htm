@@ -1,0 +1,18 @@
+<div class="well">
+    <form class="form-vertical" name="formMe" novalidate ng-submit="submit(formMe)">
+        <div class="form-group has-feedback">
+            <input required type="text" class="form-control" placeholder="host" ng-model="host">
+            <required data-key="host"></required>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-default" type="submit">get</button>
+        </div>
+        <alert data-key="message"></alert>
+    </form>
+</div>
+
+<ul class="list-group">
+    <li class="list-group-item" ng-repeat="item in contacts">
+        <a href="javascript:void(0);" ng-click="submitTarget(item)" title="contact">{{item.name}}</a>
+    </li>
+</ul>

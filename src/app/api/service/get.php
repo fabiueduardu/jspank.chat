@@ -1,6 +1,6 @@
 <?php
-include 'jspank.partial.config.php';
-include 'jspank.partial.domain.php';
+include 'partial.config.php';
+include 'partial.domain.php';
 
 $dbid = $_REQUEST['dbid'];
 $username = $_REQUEST['username'];
@@ -22,7 +22,8 @@ if(AppService::has($dbid))
         
         $PostService = new PostService($dbid);
         $db_result = $PostService -> get($postid, $forward);
-        $result = array ('dbid'=> $dbid, 'posts'=> $db_result ,'isvalid' => true, 'message' => AppService::message['success']);
+        $db_result_user =  $UserService -> getAll();
+        $result = array ('dbid'=> $dbid, 'posts'=> $db_result ,'users'=> $db_result_user, 'isvalid' => true, 'message' => AppService::message['success']);
     }
     
 }

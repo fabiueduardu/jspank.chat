@@ -4,13 +4,34 @@ JSpank.Chat is an application in php, sqlite, json, angular [JSpank](http://www.
 
 ## Installation
 ## Usage
-	 create and write permissions on the folder ~/data  and ~/log
 
-* ~/jspank.me.php
-* ~/jspank.new.php
-* ~/jspank.post.php
-* ~/jspank.get.php
-* ~/jspank.console.htm
-  * html, bootstrap, javascript, angular
- * ~/jspank.console_v1.htm
-  * html, bootstrap, javascript
+1. Create directory
+2. Add write permission to folders ~/data and ~/log
+3. Access main ~/jspank.chat.php
+
+## Structure
+
+The basic structure of the project is given in the following way:
+
+```
+
+├── data/
+│   ├── [00000000-0000-0000-0000-000000000000]
+├── log/
+│   ├── dd-MM-yyyy.log
+├── service/
+│   ├── new.php
+│   ├── post.php
+│   ├── get.php
+│   ├── friend.php
+├── template/
+│   ├── new.htm
+│   ├── post.htm
+│   ├── get.htm
+│   ├── alert.htm
+│   ├── required.htm
+├── index.htm
+├── index.js
+├── doc.htm
+├── jspank.chat.php
+

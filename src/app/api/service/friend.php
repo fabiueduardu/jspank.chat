@@ -1,12 +1,11 @@
 <?php
-include 'jspank.partial.config.php';
-include 'jspank.partial.domain.php';
+include 'partial.config.php';
+include 'partial.domain.php';
 
 $dbid = $_REQUEST['dbid'];
 $username = $_REQUEST['username'];
 $username_add = isset($_REQUEST['username_add']) ? $_REQUEST['username_add'] : null;
 $username_remove = isset($_REQUEST['username_remove']) ? $_REQUEST['username_remove'] : null;
-$post = $_REQUEST['post'];
 $result = array ('isvalid' => false, 'message' => AppService::message['error_404']);
 
 if(AppService::has($dbid))
@@ -18,13 +17,11 @@ if(AppService::has($dbid))
     
     if( count($db_user ) > 0)
     {
-        $PostService = new PostService($dbid);
-        $UserService = new UserService($dbid);
-        
-        $db_result = $PostService -> add($username, $post);
+        $UserService = new UserService($dbid);        
         $result = array ('dbid'=> $dbid,'isvalid' => true, 'message' => AppService::message['success']);
         
         if($username_add != null){
+            $PostService = new PostService($dbid);
             $db_maxpostid = $PostService -> getmaxpostid()[0]['postid'];
                         
             foreach(explode(',',$username_add) as $key => $val){

@@ -1,6 +1,6 @@
 <?php
-include 'jspank.partial.config.php';
-include 'jspank.partial.domain.php';
+include 'partial.config.php';
+include 'partial.domain.php';
 
 if(!AppService::validateNew())
 {

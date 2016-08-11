@@ -1,0 +1,16 @@
+<div class="well">
+    <form class="form-vertical" name="formNew" novalidate ng-submit="submit(formNew)">
+        <div class="form-group has-feedback">
+            <input required type="text" class="form-control" placeholder="user name" name="username" ng-model="username">
+            <required data-key="username"></required>
+        </div>
+        <div class="form-group has-feedback">
+            <input required type="text" class="form-control" placeholder="host" name="host" ng-model="host">
+            <required data-key="host"></required>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-default" type="submit">create</button>
+        </div>
+         <alert data-key="message"></alert>
+    </form>
+</div>

@@ -1,0 +1,49 @@
+<form class="form-vertical" name="formGet" novalidate ng-submit="submit(formGet)">
+    <div class="panel panel-default">
+        <div class="panel-heading">posts
+            <span ng-repeat="item in users">
+                    <span class="label label-success">{{item.username}}
+                        <a href="javascript:void(0);" class="glyphicon glyphicon-remove" ng-click="submitFriendToRemove(formGet , item.username)"></a>
+                    </span>
+            </span>
+        </div>
+        <div class="panel-body">
+            <div class="form-inline pull-right">
+                <div class="input-group">
+                    <span class="input-group-addon">
+                         <span class="glyphicon glyphicon-time"></span>
+                    </span>
+                    <select class="form-control" ng-model="getting_seconds">
+                         <option value="3" selected="selected">3 seconds</option>
+                        <option value="5">5 seconds</option>
+                        <option value="10">10 seconds</option>      
+                        <option value="25">25 seconds</option>      
+                        <option value="50">50 seconds</option>                                    
+                </select>
+                    <span class="input-group-addon">{{getting_seconds_count||00}}</span>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-default" ng-click="post_getting = !post_getting">get</button>
+                </div>
+            </div>
+            <table class="table table-striped">
+                <thead class="thead-inverse">
+                    <tr>
+                        <td>postid</td>
+                        <td>date</td>
+                        <td>user</td>
+                        <td>post</td>
+                    </tr>
+                </thead>
+                <tbody class="table-hover">
+                    <tr ng-repeat="item in posts" data-postid={{item.postid}}>
+                        <td>{{item.postid}}</td>
+                        <td>{{item.datecreate}}</td>
+                        <td>{{item.username}}</td>
+                        <td>{{item.post}} </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,42 @@
+<div class="well">
+    <form class="form-vertical" name="formPost" novalidate ng-submit="submit(formPost)">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group has-feedback">
+                    <input required type="text" class="form-control" placeholder="host" name="host" ng-model="host">
+                    <required data-key="host"></required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group has-feedback">
+                    <input required type="text" class="form-control" placeholder="dbid" name="dbid" ng-model="dbid">
+                    <required data-key="dbid"></required>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group has-feedback">
+                    <input required type="text" class="form-control" placeholder="user name" name="username" ng-model="username">
+                    <required data-key="username"></required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="friend" name="username_add" ng-model="username_add">
+                    <span class="input-group-addon">
+                         <a href="javascript:void(0);" class="glyphicon glyphicon-ok" ng-click="submitFriend(formPost)"></a>
+,                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group has-feedback">
+            <textarea required type="text" class="form-control" rows="2" placeholder="post" name="post" ng-model="post"></textarea>
+            <required data-key="post"></required>
+        </div>
+      <div class="form-group">
+            <button class="btn btn-default" type="submit">send</button>
+        </div>
+          <alert data-key="message"></alert>
+    </form>
+</div>

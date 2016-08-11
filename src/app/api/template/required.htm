@@ -1,0 +1,4 @@
+<span ng-show="form.$submitted || form[key].$touched"> 
+    <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="!form[key].$error.required"></span>
+    <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="form[key].$error.required"></span>
+</span>
