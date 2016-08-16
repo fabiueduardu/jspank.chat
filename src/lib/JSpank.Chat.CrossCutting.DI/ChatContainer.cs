@@ -15,15 +15,18 @@ namespace JSpank.Chat.CrossCutting.DI
             //domain repositories
             container.Register<IAppRepository, AppRepository>(Lifestyle.Transient);
             container.Register<IPostRepository, PostRepository>(Lifestyle.Transient);
+            container.Register<IUserRepository, UserRepository>(Lifestyle.Transient);
 
             //domain services
             container.Register<IAppService, AppService>(Lifestyle.Transient);
             container.Register<IPostService, PostService>(Lifestyle.Transient);
+            container.Register<IUserService, UserService>(Lifestyle.Transient);
 
 
             //app services
             container.Register<IAppAppService, AppAppService>(Lifestyle.Transient);
             container.Register<IPostAppService, PostAppService>(Lifestyle.Transient);
+            container.Register<IUserAppService, UserAppService>(Lifestyle.Transient);
 
         }
     }

@@ -1,9 +1,9 @@
 ﻿using JSpank.Chat.Domain.ValueObjects;
 using System;
 
-namespace JSpank.Chat.Domain.Interfaces.Repositories
+namespace JSpank.Chat.Domain.Interfaces.Services
 {
-    public interface IUserRepository
+    public interface IUserService
     {
         ChatModel Add(string apiService, Guid dbid, string username, string username_add);
 

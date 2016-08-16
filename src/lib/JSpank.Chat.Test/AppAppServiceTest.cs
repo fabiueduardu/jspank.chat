@@ -3,6 +3,9 @@ using JSpank.Chat.App.Interfaces.Services;
 using System;
 using System.Configuration;
 using System.Linq;
+using JSpank.Chat.App.Services;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace JSpank.Chat.Test
 {
@@ -22,6 +25,14 @@ namespace JSpank.Chat.Test
             get
             {
                 return base.container.GetInstance<IPostAppService>();
+            }
+        }
+
+        UserAppService _IUserAppService
+        {
+            get
+            {
+                return base.container.GetInstance<UserAppService>();
             }
         }
 
@@ -55,10 +66,8 @@ namespace JSpank.Chat.Test
 
             Guid dbid = result.DbId;
             string post = base.Key(10);
-            string[] username_add = null;
-            string[] username_remove = null;
 
-            result = this._IPostAppService.Post(this.ApiService, dbid, username, post, username_add, username_remove);
+            result = this._IPostAppService.Post(this.ApiService, dbid, username, post);
 
             Assert.IsTrue(result.IsValid, result.Message);
             Assert.AreNotEqual(result, Guid.Empty, result.Message);
@@ -76,11 +85,9 @@ namespace JSpank.Chat.Test
 
             Guid dbid = result.DbId;
             string post = base.Key(10);
-            string[] username_add = null;
-            string[] username_remove = null;
 
             for (var i = 0; i < 100; i++)
-                result = this._IPostAppService.Post(this.ApiService, dbid, username, string.Format("{0:0000}: {1}", i, post), username_add, username_remove);
+                result = this._IPostAppService.Post(this.ApiService, dbid, username, string.Format("{0:0000}: {1}", i, post));
 
             Assert.IsTrue(result.IsValid, result.Message);
             Assert.AreNotEqual(result, Guid.Empty, result.Message);
@@ -98,13 +105,15 @@ namespace JSpank.Chat.Test
 
             Guid dbid = result.DbId;
             string post = base.Key(10);
-            string[] username_add = null;
-            string[] username_remove = null;
 
             for (var i = 0; i < 10; i++)
             {
-                username_add = new string[] { base.Key5 };
-                result = this._IPostAppService.Post(this.ApiService, dbid, username, string.Format("{0:0000}: {1}", i, post), username_add, username_remove);
+                var username_add = base.Key5;
+
+                result = this._IUserAppService.Add(this.ApiService, dbid, username, username_add);
+                Assert.IsTrue(result.IsValid, result.Message);
+
+                result = this._IPostAppService.Post(this.ApiService, dbid, username, string.Format("{0:0000}: {1}", i, post));
 
                 Assert.IsTrue(result.IsValid, result.Message);
                 Assert.AreNotEqual(result, Guid.Empty, result.Message);
@@ -113,7 +122,7 @@ namespace JSpank.Chat.Test
                 for (var _if = 0; _if < new Random().Next(0, 10); _if++)
                 {
 
-                    result = this._IPostAppService.Post(this.ApiService, dbid, username_add.First(), string.Format("{0:0000}: {1}", _if, post), null, null);
+                    result = this._IPostAppService.Post(this.ApiService, dbid, username_add, string.Format("{0:0000}: {1}", _if, post));
 
                     Assert.IsTrue(result.IsValid, result.Message);
                     Assert.AreNotEqual(result, Guid.Empty, result.Message);
@@ -134,13 +143,16 @@ namespace JSpank.Chat.Test
 
             Guid dbid = result.DbId;
             string post = base.Key(10);
-            string[] username_add = null;
-            string[] username_remove = null;
+            string username_add = null;
+
 
             for (var i = 0; i < 10; i++)
             {
-                username_add = new string[] { base.Key5 };
-                result = this._IPostAppService.Post(this.ApiService, dbid, username, string.Format("{0:0000}: {1}", i, post), username_add, username_remove);
+                username_add = base.Key5;
+                result = this._IUserAppService.Add(this.ApiService, dbid, username, username_add);
+                Assert.IsTrue(result.IsValid, result.Message);
+
+                result = this._IPostAppService.Post(this.ApiService, dbid, username, string.Format("{0:0000}: {1}", i, post));
 
                 Assert.IsTrue(result.IsValid, result.Message);
                 Assert.AreNotEqual(result, Guid.Empty, result.Message);
@@ -149,12 +161,51 @@ namespace JSpank.Chat.Test
                 for (var a = 0; a < 100; a++)
                 {
 
-                    result = this._IPostAppService.Post(this.ApiService, dbid, username_add.First(), string.Format("{0:0000}: {1}", a, post), null, null);
+                    result = this._IPostAppService.Post(this.ApiService, dbid, username_add, string.Format("{0:0000}: {1}", a, post));
 
                     Assert.IsTrue(result.IsValid, result.Message);
                     Assert.AreNotEqual(result, Guid.Empty, result.Message);
                     Console.WriteLine("IsValid: {0}, Message: {1} , DbID: {2}", result.IsValid, result.Message, result.DbId);
                 }
+            }
+
+        }
+
+        [TestMethod]
+        public void TargetDbId_ChatSimulate()
+        {
+            var DbId = ConfigurationManager.AppSettings["DbId"] as string;
+            var DbIdUserName = ConfigurationManager.AppSettings["DbIdUserName"] as string;
+
+            Assert.IsNotNull(DbId, "not dbid on settings");
+            Assert.IsNotNull(DbIdUserName, "not username on settings");
+
+            var rdn = new Random();
+            var users = new List<string>();
+            users.Add(DbIdUserName);
+            var dbid = Guid.Parse(DbId);
+
+            int index = 0;
+            while (true)
+            {
+                var result = this._IPostAppService.Post(this.ApiService, dbid, users.OrderBy(a => Guid.NewGuid()).First(), base.Lorem(rdn.Next(1, 200)));
+                Assert.IsTrue(result.IsValid, result.Message);
+
+                if (index % 2 == 0)
+                {
+                    var usernameNew = base.Key5;
+                    users.Add(usernameNew);
+
+                    result = this._IUserAppService.Add(this.ApiService, dbid, users.First(), usernameNew);
+                    Assert.IsTrue(result.IsValid, result.Message);
+
+                    result = this._IPostAppService.Post(this.ApiService, dbid, usernameNew, base.Lorem(rdn.Next(1, 200)));
+                    Assert.IsTrue(result.IsValid, result.Message);
+                }
+
+                Console.WriteLine("Index: {0}, Sleep {1:dd/MM/yyyy HH:mm:ss}", index, DateTime.Now);
+                Thread.Sleep(rdn.Next(1, 5) * 1000);
+                index++;
             }
 
         }

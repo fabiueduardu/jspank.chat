@@ -14,9 +14,9 @@ namespace JSpank.Chat.Domain.Services
             this._IPostRepository = _IPostRepository;
         }
 
-        public ChatModel Post(string apiService, Guid dbid, string username, string post, string[] username_add, string[] username_remove)
+        public ChatModel Post(string apiService, Guid dbid, string username, string post)
         {
-            return this._IPostRepository.Post(apiService, dbid, username, post, username_add, username_remove);
+            return this._IPostRepository.Post(apiService, dbid, username, post);
         }
 
         public GetChatModel Get(string apiService, Guid dbid, string username)

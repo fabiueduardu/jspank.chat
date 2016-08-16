@@ -16,9 +16,9 @@ namespace JSpank.Chat.App.Services
             this._IPostService = _IPostService;
         }
 
-        public ChatModelApp Post(string apiService, Guid dbid, string username, string post, string[] username_add, string[] username_remove)
+        public ChatModelApp Post(string apiService, Guid dbid, string username, string post)
         {
-            var result = this._IPostService.Post(apiService, dbid, username, post, username_add, username_remove);
+            var result = this._IPostService.Post(apiService, dbid, username, post);
             return AutoMapperConfig.Get<ChatModel, ChatModelApp>(result);
         }
 

@@ -41,8 +41,10 @@
     <Compile Include="AutoMapper\DomainToViewModelMappingProfile.cs" />
     <Compile Include="AutoMapper\ViewModelToDomainMappingProfile.cs" />
     <Compile Include="Interfaces\Services\IAppAppService.cs" />
+    <Compile Include="Interfaces\Services\IUserAppService.cs" />
     <Compile Include="Interfaces\Services\IPostAppService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\UserAppService.cs" />
     <Compile Include="Services\PostAppService.cs" />
     <Compile Include="Services\AppAppService.cs" />
     <Compile Include="ValueObjects\ChatModel.cs" />

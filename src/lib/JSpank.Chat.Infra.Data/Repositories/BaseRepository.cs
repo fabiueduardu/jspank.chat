@@ -7,10 +7,6 @@ namespace JSpank.Chat.Infra.Data.Repositories
 {
     public class BaseRepository
     {
-        protected string _new = "jspank.new.php";
-        protected string _post = "jspank.post.php";
-        protected string _get = "jspank.get.php";
-
         protected T getJSON<T>(string apiService, string method = "POST", IDictionary<string, object> values = null)
         {
             try

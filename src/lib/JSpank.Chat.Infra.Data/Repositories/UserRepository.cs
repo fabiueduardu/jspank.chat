@@ -5,28 +5,29 @@ using System.Collections.Generic;
 
 namespace JSpank.Chat.Infra.Data.Repositories
 {
-    public class PostRepository : BaseRepository, IPostRepository
+    public class UserRepository : BaseRepository, IUserRepository
     {
-        public ChatModel Post(string apiService, Guid dbid, string username, string post)
+        public ChatModel Add(string apiService, Guid dbid, string username, string username_add)
         {
             var values = new Dictionary<string, object>();
-            values.Add("method", "post");
+            values.Add("method", "friend");
             values.Add("dbid", dbid);
             values.Add("username", username);
-            values.Add("post", post);
+            values.Add("username_add", username_add);
 
             var result = base.getJSON<ChatModel>(apiService, method: "POST", values: values);
             return result;
         }
 
-        public GetChatModel Get(string apiService, Guid dbid, string username)
+        public ChatModel Remove(string apiService, Guid dbid, string username, string username_remove)
         {
             var values = new Dictionary<string, object>();
-            values.Add("method", "get");
+            values.Add("method", "friend");
             values.Add("dbid", dbid);
             values.Add("username", username);
+            values.Add("username_remove", username_remove);
 
-            var result = base.getJSON<GetChatModel>(apiService, method: "GET", values: values);
+            var result = base.getJSON<ChatModel>(apiService, method: "POST", values: values);
             return result;
         }
     }
