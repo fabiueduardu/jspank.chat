@@ -4,7 +4,7 @@ include 'partial.domain.php';
 
 if(!AppService::validateNew())
 {
-    echo json_encode(array ('isvalid'=>false,'message' => AppService::message['error']));
+    echo json_encode(array ('isvalid'=>false,'message' => AppService::getMessage('error' , $language)));
     exit;
 }
 
@@ -26,9 +26,9 @@ $UserService = new UserService($dbid);
 $db_result = $UserService -> add($username);
 
 $PostService = new PostService($dbid);
-$db_result = $PostService -> add($username, AppService::message['success']);
+$db_result = $PostService -> add($username, AppService::getMessage('success' , $language));
 
-$result = array ('dbid'=> $dbid, 'isvalid'=>$db_result,'message' => AppService::message['success']);
+$result = array ('dbid'=> $dbid, 'isvalid'=>$db_result,'message' => AppService::getMessage('success' , $language));
 echo json_encode($result);
 
 ?>

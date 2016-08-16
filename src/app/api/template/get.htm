@@ -1,14 +1,16 @@
 <form class="form-vertical" name="formGet" novalidate ng-submit="submit(formGet)">
     <div class="panel panel-default">
-        <div class="panel-heading">posts
-
-            <span class="label label-success" ng-repeat="item in users">
-            {{item.username}}       
-           
+        <div class="panel-heading">
+            posts...
+            <span ng-repeat="item in users">
+                    <span class="label label-success" style="margin-left:5px;" ng-style="getStyle(item.username)">
+                        <span class="glyphicon glyphicon-user"></span> {{item.username}}
             <a href="javascript:void(0);" class="glyphicon glyphicon-share" ng-click="submitFriendToShare(formGet , item.username)"></a>
             <a href="javascript:void(0);" class="glyphicon glyphicon-remove" ng-click="submitFriendToRemove(formGet , item.username)"></a>
-                        </span>
+            </span>
+            </span>
         </div>
+        <alert data-key="message"></alert>
         <div class="panel-body">
             <div class="form-inline pull-right">
                 <div class="input-group">
@@ -16,8 +18,8 @@
                          <span class="glyphicon glyphicon-time"></span>
                     </span>
                     <select class="form-control" ng-model="getting_seconds" ng-init="getting_seconds = '3' ">
-                         <option value="1" selected="selected">1 seconds</option>
-                          <option value="3">3 seconds</option>
+                        <option value="1" selected="selected">1 seconds</option>
+                        <option value="3">3 seconds</option>
                         <option value="5">5 seconds</option>
                         <option value="10">10 seconds</option>      
                         <option value="25">25 seconds</option>      
@@ -26,7 +28,7 @@
                     <span class="input-group-addon">{{getting_seconds_count||00}}</span>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-default"  ng-disabled="!post_host || !post_dbid || !post_username">
+                    <button type="submit" id="get_posts" class="btn btn-default" ng-disabled="!post_host || !post_dbid || !post_username">
                          <span  ng-attr-class="{{post_getting && 'glyphicon glyphicon-stop' || 'glyphicon glyphicon-play'}}"></span>
                      </button>
                 </div>
@@ -41,16 +43,26 @@
                     </tr>
                 </thead>
                 <tbody class="table-hover">
-                    <tr ng-repeat="item in posts" data-postid={{item.postid}}>
+                    <tr ng-repeat="item in posts" data-postid={{item.postid}} ng-style="getStyle(item.username)">
                         <td>{{item.postid}}</td>
                         <td>{{item.datecreate}}</td>
                         <td>{{item.username}}</td>
-                        <td>{{item.post}} </td>
+                        <td>{{item.post}} 
+
+                            <span ng-class="item.username == post_username ? 'pull-right glyphicon glyphicon-star' : 'pull-right glyphicon glyphicon-star-empty'"></span>
+                        </td>
                     </tr>
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4">
+                            <center>
+                                <button type="button" ng-show="posts[posts.length-1].postid === '1' ? false : true" ng-click="gettingOld(formGet)" class="btn btn-default">load more...</button>
+                            </center>
+                        </td>
+                    </tr>
+                </tfoot>
             </table>
-            <alert data-key="message"></alert>
-            
         </div>
     </div>
 </form>

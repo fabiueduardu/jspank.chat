@@ -1,6 +1,6 @@
 var app = angular.module('app', []);
 var app_var = {
-    version: 0.1,
+    version: 0.2,
     http_headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     message: {
         error: 'there was an error, please try again later',
@@ -39,10 +39,11 @@ var app_var = {
         return "00000".substring(0, 6 - c.length) + c;
     },
     getColor: function (value) {
-        alert(2)
         return app_var.color(app_var.hashCode(value));
     }
 };
+
+
 
 //### INIT GLOBAL
 app.controller('appCtrl', function ($scope, $location) {
@@ -54,6 +55,9 @@ app.controller('appCtrl', function ($scope, $location) {
         $scope.post_host = target.host;
         $scope.post_username = target.username;
         $scope.post_name = target.name;
+
+        setTimeout(function () { document.getElementById('get_posts').click(); }, 1000);
+
     }
 
     $scope.toClipBoard = function (target) {
@@ -88,9 +92,9 @@ app.directive('new', function () {
                     form.isvalid = result.data.isvalid;
                     form.message = result.data.message;
 
-                       var target = { name: 'Contact temp', dbid: result.data.dbid, host: host, username: data.username };
-                        $scope.contacts.unshift(target);
-                        $scope.submitTarget(target);
+                    var target = { name: 'temp by ' + data.username, dbid: result.data.dbid, host: host, username: data.username };
+                    $scope.contacts.unshift(target);
+                    $scope.submitTarget(target);
                 }, function (data) {
                     form.message = app_var.message.get(data);
                 });
@@ -137,7 +141,6 @@ app.directive('me', function () {
 //### POST
 app.directive('post', function () {
     var directive = {
-        scope: true,
         templateUrl: 'template/post.htm?vs=' + app_var.version,
         controller: ['$scope', '$http', '$httpParamSerializer', function ($scope, $http, $httpParamSerializer) {
 
@@ -155,7 +158,7 @@ app.directive('post', function () {
                     form.isvalid = result.data.isvalid;
                     form.message = result.data.message;
 
-                    if (form.isvalid === true) $scope.post_username_add = null;
+                    if (form.isvalid === true) $scope.post_post = null;
                 }, function (data) {
                     form.message = app_var.message.get(data);
                 });
@@ -176,6 +179,9 @@ app.directive('post', function () {
                 $http.post(host, $httpParamSerializer(data), { headers: app_var.http_headers }).then(function (result) {
                     form.isvalid = result.data.isvalid;
                     form.message = result.data.message;
+
+                    if (form.isvalid === true)
+                        form.message = null;
                 }, function (data) {
                     form.message = app_var.message.get(data);
                 });
@@ -192,7 +198,7 @@ app.directive('get', function () {
     var directive = {
         scope: true,
         templateUrl: 'template/get.htm?vs=' + app_var.version,
-        controller: ['$scope', '$http', '$httpParamSerializer', function ($scope, $http, $httpParamSerializer) {
+        controller: ['$scope', '$http', '$httpParamSerializer', '$interval', function ($scope, $http, $httpParamSerializer, $interval) {
             $scope.posts = [];
             $scope.users = [];
             $scope.getting_seconds = 0;
@@ -228,8 +234,8 @@ app.directive('get', function () {
                 clearInterval(gettingInterval);
                 if ($scope.post_getting)
                     gettingInterval = setInterval(function () {
-                        $scope.getting(form, function (isvalid) {
-                            if (!isvalid) {
+                        $scope.getting(form, function (result) {
+                            if (!result.data.isvalid) {
                                 clearInterval(gettingInterval);
                                 $scope.post_getting = false;
                             }
@@ -238,37 +244,50 @@ app.directive('get', function () {
                     }, 1000 * $scope.getting_seconds);
             }
 
-            $scope.getting = function (form, callback) {
+            $scope.getStyle = function (value) {
+                return { 'color': '#'+app_var.color(app_var.hashCode(value)) };
+            }
+            $scope.gettingOld = function (form) {
+                $scope.getting(form, function (result) { }, false);
+            }
+
+            $scope.getting = function (form, callback, forward) {
                 var host = $scope.post_host;
                 var data = {
                     method: app_var.serviceMethod.toGet,
                     dbid: $scope.post_dbid,
                     username: $scope.post_username,
-                    postid: ($scope.posts[0] || { postid: 0 }).postid
+                    postid: ($scope.posts[0] || { postid: 0 }).postid,
+                    forward: (forward === false ? '0' : '1')
                 };
+
+                if (forward === false)
+                    data.postid = ($scope.posts[$scope.posts.length - 1] || { postid: 0 }).postid
 
                 if (!data.dbid || !data.username || !host) {
                     form.message = app_var.message.get({ status: 500 });
                     return false;
                 }
-
                 $http.post(host, $httpParamSerializer(data), { headers: app_var.http_headers }).then(function (result) {
                     form.isvalid = result.data.isvalid;
                     form.message = result.data.message;
 
                     if (form.isvalid === true) {
+                        form.message = null;
                         $scope.getting_seconds_count++;
                         $scope.users = result.data.users;
-                        angular.forEach(result.data.posts, function (value, item) { $scope.posts.unshift(value); });
+                        if (forward == false) {
+                            angular.forEach(result.data.posts, function (value, item) { $scope.posts.push(value); });
+                        } else
+                            angular.forEach(result.data.posts, function (value, item) { $scope.posts.unshift(value); });
                     }
 
-                    callback(form.isvalid);
-                }, function (data) {
-                    form.message = app_var.message.get(data);
-                    callback(false);
+                    callback(result);
+                }, function (result) {
+                    form.message = app_var.message.get(result);
+                    callback(result);
                 });
             }
-
         }]
     }
 

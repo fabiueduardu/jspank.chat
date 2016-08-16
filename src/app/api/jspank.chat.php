@@ -18,7 +18,7 @@ switch ($method) {
         include 'service/me.php';
         break;
     default:
-        echo 'error';
+        echo json_encode(array ('isvalid'=> false,'message' => 'error, 405 method not allowed'));
 }
 
 ?>

@@ -12,7 +12,7 @@ $index++;
 if( $index>5) break;
 }
 
-$result = array ('contacts'=>$results, 'isvalid'=> true, 'message' => AppService::message['success']);
+$result = array ('contacts'=>$results, 'isvalid'=> true, 'message' => AppService::getMessage('success' , $language));
 echo json_encode($result);
 
 

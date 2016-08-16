@@ -1,5 +1,6 @@
- <div class="form-group" ng-show="form[key]">
-    <div ng-attr-class="{{form['isvalid'] && 'alert alert-success' || 'alert alert-danger'}}"  role="alert">
-      {{form[key]}}
-    </div>
+<div class="form-group" ng-show="form[key]">
+  <div ng-attr-class="{{form['isvalid'] && 'alert alert-success' || 'alert alert-danger'}}" role="alert">
+    <span class="glyphicon glyphicon-exclamation-sign" ng-show="!form['isvalid']"></span>
+    <span class="sr-only">Error:</span> {{form[key]}}
+  </div>
 </div>
