@@ -1,26 +1,70 @@
 var app = angular.module('app', []);
 var app_var = {
+    version: 0.1,
     http_headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     message: {
         error: 'there was an error, please try again later',
         error_404: 'error, 404 not found',
+        error_500: 'error, 500 internal server error',
         success: 'success',
-        get: function (data) { return (data.status === 404 ? app_var.message.error_404 : app_var.message.error) }
+        get: function (data) {
+            switch (data.status) {
+                case 404:
+                    return app_var.message.error_404;
+                case 500:
+                    return app_var.message.error_500;
+                default:
+                    return app_var.message.error;
+            }
+        }
     },
     serviceMethod: {
         toNew: 'new',
         toGet: 'get',
         toPost: 'post',
         toFriend: 'friend'
+    },
+    hashCode: function (str) {
+        var hash = 0;
+        for (var i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return hash;
+    },
+    color: function (value) {
+        var c = (value & 0x00FFFFFF)
+            .toString(16)
+            .toUpperCase();
+
+        return "00000".substring(0, 6 - c.length) + c;
+    },
+    getColor: function (value) {
+        alert(2)
+        return app_var.color(app_var.hashCode(value));
     }
 };
 
-app.controller('appCtrl', function ($scope) {
+//### INIT GLOBAL
+app.controller('appCtrl', function ($scope, $location) {
+    $scope.contacts = [];
     $scope.post_getting = false;
+
     $scope.submitTarget = function (target) {
-        $scope.dbid = target.dbid;
-        $scope.host = target.host;
-        $scope.username = target.username;
+        $scope.post_dbid = target.dbid;
+        $scope.post_host = target.host;
+        $scope.post_username = target.username;
+        $scope.post_name = target.name;
+    }
+
+    $scope.toClipBoard = function (target) {
+        window.prompt("Copy to clipboard: Ctrl+C, Enter", $scope.post_urlshare);
+    }
+
+    var search = $location.search();
+    if (search.dbid) {
+        var target = { name: search.name, dbid: search.dbid, host: search.host, username: search.username };
+        $scope.contacts.unshift(target);
+        $scope.submitTarget(target);
     }
 });
 
@@ -28,21 +72,25 @@ app.controller('appCtrl', function ($scope) {
 app.directive('new', function () {
     var directive = {
         scope: true,
-        templateUrl: 'template/new.htm',
+        templateUrl: 'template/new.htm?vs=' + app_var.version,
         controller: ['$scope', '$http', '$httpParamSerializer', function ($scope, $http, $httpParamSerializer) {
-            $scope.host = null;
-            $scope.username = null;
+            $scope.new_host = '/chat/jspank.chat.php';
+            $scope.new_username = null;
 
             $scope.submit = function (form) {
                 form.isvalid = false;
                 if (form.$invalid) return;
 
-                var host = $scope.host;
-                var data = { method: app_var.serviceMethod.toNew, username: $scope.username };
+                var host = $scope.new_host;
+                var data = { method: app_var.serviceMethod.toNew, username: $scope.new_username };
 
                 $http.post(host, $httpParamSerializer(data), { headers: app_var.http_headers }).then(function (result) {
                     form.isvalid = result.data.isvalid;
                     form.message = result.data.message;
+
+                       var target = { name: 'Contact temp', dbid: result.data.dbid, host: host, username: data.username };
+                        $scope.contacts.unshift(target);
+                        $scope.submitTarget(target);
                 }, function (data) {
                     form.message = app_var.message.get(data);
                 });
@@ -59,9 +107,8 @@ app.directive('new', function () {
 app.directive('me', function () {
     var directive = {
         scope: true,
-        templateUrl: 'template/me.htm',
+        templateUrl: 'template/me.htm?vs=' + app_var.version,
         controller: ['$scope', '$http', function ($scope, $http) {
-            $scope.contacts = [];
             $scope.host = '/chat/jspank.chat.php?method=me';
 
             $scope.submit = function (form) {
@@ -91,24 +138,24 @@ app.directive('me', function () {
 app.directive('post', function () {
     var directive = {
         scope: true,
-        templateUrl: 'template/post.htm',
+        templateUrl: 'template/post.htm?vs=' + app_var.version,
         controller: ['$scope', '$http', '$httpParamSerializer', function ($scope, $http, $httpParamSerializer) {
 
             $scope.submitFriend = function (form) {
-                var host = $scope.host;
+                var host = $scope.post_host;
                 var data = {
                     method: app_var.serviceMethod.toFriend,
-                    dbid: $scope.dbid,
-                    username: $scope.username,
-                    username_add: $scope.username_add,
-                    post: $scope.post
+                    dbid: $scope.post_dbid,
+                    username: $scope.post_username,
+                    username_add: $scope.post_username_add,
+                    post: $scope.post_post
                 };
 
                 $http.post(host, $httpParamSerializer(data), { headers: app_var.http_headers }).then(function (result) {
                     form.isvalid = result.data.isvalid;
                     form.message = result.data.message;
 
-                    if (form.isvalid === true) $scope.username_add = null;
+                    if (form.isvalid === true) $scope.post_username_add = null;
                 }, function (data) {
                     form.message = app_var.message.get(data);
                 });
@@ -118,12 +165,12 @@ app.directive('post', function () {
                 form.isvalid = false;
                 if (form.$invalid) return;
 
-                var host = $scope.host;
+                var host = $scope.post_host;
                 var data = {
                     method: app_var.serviceMethod.toPost,
-                    dbid: $scope.dbid,
-                    username: $scope.username,
-                    post: $scope.post
+                    dbid: $scope.post_dbid,
+                    username: $scope.post_username,
+                    post: $scope.post_post
                 };
 
                 $http.post(host, $httpParamSerializer(data), { headers: app_var.http_headers }).then(function (result) {
@@ -144,62 +191,81 @@ app.directive('post', function () {
 app.directive('get', function () {
     var directive = {
         scope: true,
-        templateUrl: 'template/get.htm',
+        templateUrl: 'template/get.htm?vs=' + app_var.version,
         controller: ['$scope', '$http', '$httpParamSerializer', function ($scope, $http, $httpParamSerializer) {
             $scope.posts = [];
             $scope.users = [];
             $scope.getting_seconds = 0;
             $scope.getting_seconds_count = 0;
-
             var gettingInterval = null;
 
-            $scope.$watch('post_getting', function () {
-                if ($scope.getting_seconds === 0) return;
-
-                clearInterval(gettingInterval);
-                if ($scope.post_getting)
-                    gettingInterval = setInterval(function () { $scope.getting(); }, 1000 * $scope.getting_seconds);
-
-            });
+            $scope.submitFriendToShare = function (form, username) {
+                var post_urlshare = '//' + location.host + '/' + location.pathname + '#?host=' + $scope.post_host + '&dbid=' + $scope.post_dbid + '&name=' + $scope.post_name + '&username=' + username;
+                window.prompt("Copy to clipboard: Ctrl+C, Enter", post_urlshare);
+            }
 
             $scope.submitFriendToRemove = function (form, username) {
-                var host = $scope.host;
+                var host = $scope.post_host;
                 var data = {
                     method: app_var.serviceMethod.toFriend,
-                    dbid: $scope.dbid,
-                    username: $scope.username,
-                    username_remove: username,
-                    post: $scope.post
+                    dbid: $scope.post_dbid,
+                    username: $scope.post_username,
+                    username_remove: username
                 };
 
                 $http.post(host, $httpParamSerializer(data), { headers: app_var.http_headers }).then(function (result) {
                     form.isvalid = result.data.isvalid;
                     form.message = result.data.message;
-
-                    if (form.isvalid === true) $scope.username_add = null;
                 }, function (data) {
                     form.message = app_var.message.get(data);
                 });
             }
 
-            $scope.getting = function () {
-                var host = $scope.host;
+            $scope.submit = function (form) {
+                form.isvalid = false;
+                $scope.post_getting = !$scope.post_getting;
+
+                clearInterval(gettingInterval);
+                if ($scope.post_getting)
+                    gettingInterval = setInterval(function () {
+                        $scope.getting(form, function (isvalid) {
+                            if (!isvalid) {
+                                clearInterval(gettingInterval);
+                                $scope.post_getting = false;
+                            }
+                        });
+
+                    }, 1000 * $scope.getting_seconds);
+            }
+
+            $scope.getting = function (form, callback) {
+                var host = $scope.post_host;
                 var data = {
                     method: app_var.serviceMethod.toGet,
-                    dbid: $scope.dbid,
-                    username: $scope.username,
+                    dbid: $scope.post_dbid,
+                    username: $scope.post_username,
                     postid: ($scope.posts[0] || { postid: 0 }).postid
                 };
 
+                if (!data.dbid || !data.username || !host) {
+                    form.message = app_var.message.get({ status: 500 });
+                    return false;
+                }
+
                 $http.post(host, $httpParamSerializer(data), { headers: app_var.http_headers }).then(function (result) {
-                    $scope.isvalid = result.data.isvalid;
-                    if (result.data.isvalid === false)
-                        $scope.message = result.data.message;
-                    else {
+                    form.isvalid = result.data.isvalid;
+                    form.message = result.data.message;
+
+                    if (form.isvalid === true) {
                         $scope.getting_seconds_count++;
                         $scope.users = result.data.users;
                         angular.forEach(result.data.posts, function (value, item) { $scope.posts.unshift(value); });
                     }
+
+                    callback(form.isvalid);
+                }, function (data) {
+                    form.message = app_var.message.get(data);
+                    callback(false);
                 });
             }
 
@@ -215,7 +281,7 @@ app.directive("required", function () {
     return {
         scope: { key: '@' },
         restrict: "E",
-        templateUrl: 'template/required.htm',
+        templateUrl: 'template/required.htm?vs=' + app_var.version,
         require: "^form",
         link: function (scope, element, attrs, form) {
             scope.form = form;
@@ -228,10 +294,11 @@ app.directive("alert", function () {
     return {
         scope: { key: '@' },
         restrict: "E",
-        templateUrl: 'template/alert.htm',
+        templateUrl: 'template/alert.htm?vs=' + app_var.version,
         require: "^form",
         link: function (scope, element, attrs, form) {
             scope.form = form;
         }
     }
-})
+});
+
