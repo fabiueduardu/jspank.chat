@@ -17,11 +17,14 @@ if(AppService::has($dbid))
     
     if(!empty($db_user))
     {
-        if($postid<$db_user[0]['postid'])
-        $postid= $db_user[0]['postid'];
-        
         $PostService = new PostService($dbid);
-        $db_result = $PostService -> get($postid, $forward);
+        
+        if($postid==0){
+            $postid = $PostService -> getmaxpostid()[0]['postid'] - $PostService -> limit;
+        }
+        $minpostid =  $db_user[0]['postid'];
+        
+        $db_result = $PostService -> get($postid,  $minpostid, $forward);
         $db_result_user =  $UserService -> getAll();
         $result = array ('dbid'=> $dbid, 'posts'=> $db_result ,'users'=> $db_result_user, 'isvalid' => true, 'message' => AppService::getMessage('success' , $language));
     }

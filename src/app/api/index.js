@@ -78,7 +78,7 @@ app.directive('new', function () {
         scope: true,
         templateUrl: 'template/new.htm?vs=' + app_var.version,
         controller: ['$scope', '$http', '$httpParamSerializer', function ($scope, $http, $httpParamSerializer) {
-            $scope.new_host = '/chat/jspank.chat.php';
+            $scope.new_host = 'jspank.chat.php';
             $scope.new_username = null;
 
             $scope.submit = function (form) {
@@ -113,8 +113,6 @@ app.directive('me', function () {
         scope: true,
         templateUrl: 'template/me.htm?vs=' + app_var.version,
         controller: ['$scope', '$http', function ($scope, $http) {
-            $scope.host = '/chat/jspank.chat.php?method=me';
-
             $scope.submit = function (form) {
                 form.isvalid = false;
                 if (form.$invalid) return;
@@ -158,7 +156,7 @@ app.directive('post', function () {
                     form.isvalid = result.data.isvalid;
                     form.message = result.data.message;
 
-                    if (form.isvalid === true) $scope.post_post = null;
+                    if (form.isvalid == true) $scope.post_username_add = null;
                 }, function (data) {
                     form.message = app_var.message.get(data);
                 });
@@ -180,8 +178,10 @@ app.directive('post', function () {
                     form.isvalid = result.data.isvalid;
                     form.message = result.data.message;
 
-                    if (form.isvalid === true)
+                    if (form.isvalid == true) {
+                    $scope.post_post = null;
                         form.message = null;
+                    }
                 }, function (data) {
                     form.message = app_var.message.get(data);
                 });
@@ -245,10 +245,12 @@ app.directive('get', function () {
             }
 
             $scope.getStyle = function (value) {
-                return { 'color': '#'+app_var.color(app_var.hashCode(value)) };
+                return { 'color': '#' + app_var.color(app_var.hashCode(value)) };
             }
             $scope.gettingOld = function (form) {
-                $scope.getting(form, function (result) { }, false);
+                $scope.getting(form, function (result) {
+                    $scope.hasOld = result.data.posts.length == 0 ? true : false;
+                }, false);
             }
 
             $scope.getting = function (form, callback, forward) {

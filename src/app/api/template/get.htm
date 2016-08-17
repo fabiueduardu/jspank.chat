@@ -1,7 +1,6 @@
 <form class="form-vertical" name="formGet" novalidate ng-submit="submit(formGet)">
     <div class="panel panel-default">
         <div class="panel-heading">
-            posts...
             <span ng-repeat="item in users">
                     <span class="label label-success" style="margin-left:5px;" ng-style="getStyle(item.username)">
                         <span class="glyphicon glyphicon-user"></span> {{item.username}}
@@ -33,7 +32,7 @@
                      </button>
                 </div>
             </div>
-            <table class="table table-striped" ng-show="posts.length">
+            <table class="table table-striped " ng-show="posts.length">
                 <thead class="thead-inverse">
                     <tr>
                         <td>postid</td>
@@ -57,7 +56,9 @@
                     <tr>
                         <td colspan="4">
                             <center>
-                                <button type="button" ng-show="posts[posts.length-1].postid === '1' ? false : true" ng-click="gettingOld(formGet)" class="btn btn-default">load more...</button>
+                                <button type="button" ng-disabled="hasOld" ng-click="gettingOld(formGet)" class="btn btn-default">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                    load more...</button>
                             </center>
                         </td>
                     </tr>

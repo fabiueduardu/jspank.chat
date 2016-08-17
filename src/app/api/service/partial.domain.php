@@ -97,8 +97,8 @@ class PostRepository extends  Repository {
     
     private $queries = array(
     'post_insert'=> 'INSERT INTO post(post,username,datecreate)  values(:post,:username,julianday(\'now\'));'
-    ,'post_select_foward' => 'SELECT postid,  post, username, strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) datecreate FROM post WHERE postid > :postid order by postid LIMIT :limit;'
-    ,'post_select_back' => 'SELECT postid,  post, username, strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) datecreate FROM post WHERE postid < :postid order by postid desc LIMIT :limit;'
+    ,'post_select_foward' => 'SELECT p.postid,  p.post, p.username, strftime(\'%d/%m/%Y %H:%M:%S\',p.datecreate) datecreate FROM post p join user u on u.username = p.username WHERE u.active=1 and p.postid >= :minpostid and p.postid > :postid order by p.postid LIMIT :limit;'
+    ,'post_select_back' => 'SELECT p.postid,  p.post, p.username, strftime(\'%d/%m/%Y %H:%M:%S\',p.datecreate) datecreate FROM post p join user u on u.username = p.username WHERE u.active=1 and p.postid >= :minpostid and p.postid < :postid order by p.postid desc LIMIT :limit;'
     ,'post_select_max' => 'SELECT postid FROM (SELECT MAX(postid) postid FROM post UNION ALL SELECT 0 ) r  ORDER BY postid DESC LIMIT 1;'
     );
     
@@ -110,8 +110,8 @@ class PostRepository extends  Repository {
         return $this -> executeNonQuery($this -> queries["post_insert"] ,  array(':post' => $post,':username' => $username));
     }
     
-    public function get($postid , $foward = true , $limit = 10){
-        return $this -> executeReader($this -> queries[($foward ? "post_select_foward" : 'post_select_back') ] ,  array(':postid' => $postid,':limit' => $limit ));
+    public function get($postid , $minpostid= 0,$foward = true , $limit = 10){
+        return $this -> executeReader($this -> queries[($foward ? "post_select_foward" : 'post_select_back') ] ,  array(':postid' => $postid,':minpostid' => $minpostid ,':limit' => $limit ));
     }
     
     public function getmaxpostid(){
@@ -143,7 +143,7 @@ class AppService extends Service {
     ,'success_user_reactivated' => 'success, user reactivated'
     ,'success_user_inactivated' => 'success, user inactivated'
     ,'user_already_exists' => 'user already exists'
-
+    
     ,'success_pt-BR' => 'sucesso'
     );
     
@@ -180,15 +180,15 @@ class AppService extends Service {
     public static  function getip(){
         return $_SERVER['HTTP_CLIENT_IP']?:($_SERVER['HTTP_X_FORWARDE‌​D_FOR']?:$_SERVER['REMOTE_ADDR']);
     }
-
-  public static function getMessage($key , $language = 'en-US'){        
+    
+    public static function getMessage($key , $language = 'en-US'){
         if(array_key_exists($key.'_'.$language,AppService::message))
-            $value =AppService::message[$key.'_'.$language];
+        $value =AppService::message[$key.'_'.$language];
         else
             $value =AppService::message[$key];
-
+        
         return $value;
-    }    
+    }
 }
 
 class SettingService extends Service {
@@ -234,7 +234,7 @@ class UserService extends Service {
 class PostService extends Service {
     
     protected $repository;
-    protected $limit = 10;
+    public $limit = 10;
     
     function __construct($dbname){
         parent::__construct($dbname);
@@ -245,13 +245,8 @@ class PostService extends Service {
         return $this -> repository -> add($username,$post);
     }
     
-    public function get($postid , $foward = true){
-        if($postid==0){
-            $postid = $this -> repository -> getmaxpostid()[0]['postid'];
-            $postid = $postid - $this -> limit;
-        }
-
-        return $this -> repository -> get($postid,$foward, $this -> limit);
+    public function get($postid , $minpostid= 0, $foward = true){
+        return $this -> repository -> get($postid,$minpostid,$foward, $this -> limit);
     }
     
     public function getmaxpostid(){
