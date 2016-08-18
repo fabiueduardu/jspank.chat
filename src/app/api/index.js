@@ -179,7 +179,7 @@ app.directive('post', function () {
                     form.message = result.data.message;
 
                     if (form.isvalid == true) {
-                    $scope.post_post = null;
+                        $scope.post_post = null;
                         form.message = null;
                     }
                 }, function (data) {
@@ -245,7 +245,7 @@ app.directive('get', function () {
             }
 
             $scope.getStyle = function (value) {
-                return { 'color': '#' + app_var.color(app_var.hashCode(value)) };
+                    return { 'background': '#' + app_var.color(app_var.hashCode(value)), 'color': '#FFF' };
             }
             $scope.gettingOld = function (form) {
                 $scope.getting(form, function (result) {

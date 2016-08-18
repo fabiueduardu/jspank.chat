@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group has-feedback">
-                    <input required type="text" class="form-control" placeholder="host" name="post_host" ng-model="post_host"   >
+                    <input required type="text" class="form-control" placeholder="host" name="post_host" ng-model="post_host">
                     <required data-key="host"></required>
                 </div>
             </div>
@@ -17,25 +17,28 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group has-feedback">
-                    <input required type="text" class="form-control" placeholder="user name" name="post_username" ng-model="post_username"  maxlength="20">
+                    <input required type="text" class="form-control" placeholder="user name" name="post_username" ng-model="post_username" maxlength="20">
                     <required data-key="username"></required>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="add friend" name="post_username_add" ng-model="post_username_add"  maxlength="20">
-                    <span class="input-group-addon">
-                         <a href="javascript:void(0);" class="glyphicon glyphicon-ok" ng-click="submitFriend(formPost)"></a>
+                    <input type="text" class="form-control" placeholder="user name to invite" name="post_username_add" ng-model="post_username_add"
+                        maxlength="20">
+                    <span class="input-group-addon">                     
+                            <button class="glyphicon glyphicon-plus" type="button" ng-disabled="!post_username_add" ng-click="submitFriend(formPost)">
+                        </button>
                     </span>
                 </div>
             </div>
         </div>
+        <div class="form-group visible-xs"></div>
         <div class="form-group has-feedback">
             <textarea required type="text" class="form-control" rows="2" placeholder="post" name="post_post" ng-model="post_post"></textarea>
             <required data-key="post"></required>
         </div>
         <div class="form-group">
-            <button class="btn btn-default" type="submit" ng-disabled="!post_host || !post_dbid || !post_username || !post_post">send to {{post_name}}</button>
+            <button class="btn btn-default" type="submit" ng-disabled="!post_host || !post_dbid || !post_username || !post_post">send</button>
         </div>
         <alert data-key="message"></alert>
     </form>

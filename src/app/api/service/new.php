@@ -26,7 +26,7 @@ $UserService = new UserService($dbid);
 $db_result = $UserService -> add($username);
 
 $PostService = new PostService($dbid);
-$db_result = $PostService -> add($username, AppService::getMessage('success' , $language));
+$db_result = $PostService -> add($username, 'Hello, '.$username);
 
 $result = array ('dbid'=> $dbid, 'isvalid'=>$db_result,'message' => AppService::getMessage('success' , $language));
 echo json_encode($result);

@@ -5,7 +5,7 @@
     <title>JSpank.Chat</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
@@ -14,25 +14,47 @@
 <body ng-controller="appCtrl">
     <div class="container-fluid">
         <div class="container body-content">
-            <h1><span class="glyphicon glyphicon-globe"></span> JSpank.Chat
-                <a></a>
-            </h1>
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+                            aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            </button>
+                        <a class="navbar-brand" href="#"><span class="glyphicon glyphicon-globe"></span> JSpank.Chat</a>
+                    </div>
+                    <div id="navbar" class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#new" data-toggle="collapse"><span class="glyphicon glyphicon-plus"></span> new</a></li>
+                            <li><a href="#me" data-toggle="collapse"><span class="glyphicon glyphicon-th-list"></span> me</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
             <div class="row">
-                <div class="col-md-3">
-                    <a class="btn btn-default btn-block" data-toggle="collapse" href="#tNew">
+                <div class="col-md-6">
+                    <a class="btn btn-default btn-block" data-toggle="collapse" href="#new">
                         <span class="glyphicon glyphicon-plus"></span> new
                     </a>
-                    <div class="collapse in" id="tNew">
+                    <div class="collapse" id="new">
                         <new></new>
                     </div>
-                    <hr/>
-                    <a class="btn btn-default btn-block" data-toggle="collapse" href="#tMe">
+                </div>
+                <div class="col-md-6">
+                    <a class="btn btn-default btn-block" data-toggle="collapse" href="#me">
                         <span class="glyphicon glyphicon-th-list"></span> me</a>
-                    <div class="collapse in" id="tMe">
+                    <div class="collapse" id="me">
                         <me></me>
                     </div>
                 </div>
-                <div class="col-md-9">
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
                     <post></post>
                     <hr/>
                     <get></get>
@@ -51,5 +73,4 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="index.js"></script>
 </body>
-
 </html>

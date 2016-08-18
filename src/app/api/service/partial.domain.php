@@ -69,7 +69,7 @@ class UserRepository extends  Repository {
     'user_insert'=> 'INSERT INTO user(username,postid,datecreate)  values(:username,:postid,julianday(\'now\'));'
     ,'user_update_active'=> 'UPDATE user  SET active = :active WHERE username = :username'
     ,'user_select_target'=> 'SELECT username,active,postid,strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) datecreate FROM user WHERE username = :username and (:active is null or active = :active);'
-    ,'user_select'=> 'SELECT username,active,postid,strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) datecreate FROM user WHERE (:active is null or active = :active);'
+    ,'user_select'=> 'SELECT username,active,postid,strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) datecreate FROM user WHERE (:active is null or active = :active) order by username;'
     );
     
     function __construct($db){
