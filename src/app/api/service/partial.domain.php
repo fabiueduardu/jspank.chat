@@ -33,8 +33,8 @@ class AppRepository extends  Repository {
     
     private $queries = array(
     'setting_create' => 'CREATE TABLE IF NOT EXISTS setting (settingid INTEGER PRIMARY KEY NOT NULL,name VARCHAR(100) NOT NULL, description VARCHAR(255) NOT NULL, datecreate DATETIME NOT NULL);'
-    ,'user_create' => 'CREATE TABLE IF NOT EXISTS user (username VARCHAR(100) PRIMARY KEY NOT NULL,active BOOLEAN NOT NULL DEFAULT 1, datecreate DATETIME NOT NULL,postid INTEGER NOT NULL);'
-    ,'post_create' =>'CREATE TABLE IF NOT EXISTS post (postid INTEGER PRIMARY KEY AUTOINCREMENT , post VARCHAR(8000) NOT NULL, datecreate DATETIME NOT NULL, username VARCHAR(100) NOT NULL, FOREIGN KEY(username) REFERENCES user(username));'
+    ,'user_create' => 'CREATE TABLE IF NOT EXISTS user (username VARCHAR(100) PRIMARY KEY NOT NULL,active BOOLEAN NOT NULL DEFAULT 1, datecreate DATETIME NOT NULL,postid INTEGER NOT NULL,ip VARCHAR(20) NOT NULL);'
+    ,'post_create' =>'CREATE TABLE IF NOT EXISTS post (postid INTEGER PRIMARY KEY AUTOINCREMENT , post VARCHAR(8000) NOT NULL, datecreate DATETIME NOT NULL, username VARCHAR(100) NOT NULL,ip VARCHAR(20) NOT NULL,  FOREIGN KEY(username) REFERENCES user(username));'
     );
     
     function __construct($db){
@@ -66,7 +66,7 @@ class SettingRepository extends  Repository {
 class UserRepository extends  Repository {
     
     private $queries = array(
-    'user_insert'=> 'INSERT INTO user(username,postid,datecreate)  values(:username,:postid,julianday(\'now\'));'
+     'user_insert'=> 'INSERT INTO user(username,postid,ip,datecreate)  values(:username,:postid,:ip,julianday(\'now\'));'
     ,'user_update_active'=> 'UPDATE user  SET active = :active WHERE username = :username'
     ,'user_select_target'=> 'SELECT username,active,postid,strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) datecreate FROM user WHERE username = :username and (:active is null or active = :active);'
     ,'user_select'=> 'SELECT username,active,postid,strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) datecreate FROM user WHERE (:active is null or active = :active) order by username;'
@@ -76,8 +76,8 @@ class UserRepository extends  Repository {
         parent::__construct($db);
     }
     
-    public function add($username,$postid = 0){
-        return $this -> executeNonQuery($this -> queries["user_insert"] ,  array(':username' => $username, ':postid'=>$postid));
+    public function add($username,$postid = 0, $ip = null){
+        return $this -> executeNonQuery($this -> queries["user_insert"] ,  array(':username' => $username, ':postid'=>$postid,':ip' => $ip));
     }
     
     public function update_active($username,$active){
@@ -96,7 +96,7 @@ class UserRepository extends  Repository {
 class PostRepository extends  Repository {
     
     private $queries = array(
-    'post_insert'=> 'INSERT INTO post(post,username,datecreate)  values(:post,:username,julianday(\'now\'));'
+     'post_insert'=> 'INSERT INTO post(post,username,ip,datecreate)  values(:post,:username,:ip,julianday(\'now\'));'
     ,'post_select_foward' => 'SELECT p.postid,  p.post, p.username, strftime(\'%d/%m/%Y %H:%M:%S\',p.datecreate) datecreate FROM post p join user u on u.username = p.username WHERE u.active=1 and p.postid >= :minpostid and p.postid > :postid order by p.postid LIMIT :limit;'
     ,'post_select_back' => 'SELECT p.postid,  p.post, p.username, strftime(\'%d/%m/%Y %H:%M:%S\',p.datecreate) datecreate FROM post p join user u on u.username = p.username WHERE u.active=1 and p.postid >= :minpostid and p.postid < :postid order by p.postid desc LIMIT :limit;'
     ,'post_select_max' => 'SELECT postid FROM (SELECT MAX(postid) postid FROM post UNION ALL SELECT 0 ) r  ORDER BY postid DESC LIMIT 1;'
@@ -106,8 +106,8 @@ class PostRepository extends  Repository {
         parent::__construct($db);
     }
     
-    public function add($username, $post){
-        return $this -> executeNonQuery($this -> queries["post_insert"] ,  array(':post' => $post,':username' => $username));
+    public function add($username, $post, $ip = null){
+        return $this -> executeNonQuery($this -> queries["post_insert"] ,  array(':post' => $post,':username' => $username, ':ip' => $ip));
     }
     
     public function get($postid , $minpostid= 0,$foward = true , $limit = 10){
@@ -178,7 +178,14 @@ class AppService extends Service {
     }
     
     public static  function getip(){
-        return $_SERVER['HTTP_CLIENT_IP']?:($_SERVER['HTTP_X_FORWARDE‌​D_FOR']?:$_SERVER['REMOTE_ADDR']);
+        $ip  =null; 
+        if (array_key_exists('HTTP_CLIENT_IP', $_SERVER))
+                 $ip = $_SERVER['HTTP_CLIENT_IP'];
+        else if (array_key_exists('HTTP_X_FORWARDE‌​D_FOR', $_SERVER))
+                 $ip = $_SERVER['HTTP_X_FORWARDE‌​D_FOR'];
+        else if (array_key_exists('REMOTE_ADDR', $_SERVER))
+                 $ip = $_SERVER['REMOTE_ADDR'];
+        return $ip;
     }
     
     public static function getMessage($key , $language = 'en-US'){
@@ -215,7 +222,8 @@ class UserService extends Service {
     }
     
     public function add($username,$postid=0){
-        return $this -> repository -> add($username,$postid);
+         $ip = AppService::getip();
+        return $this -> repository -> add($username, $postid, $ip);
     }
     
     public function update_active($username,$active){
@@ -242,7 +250,8 @@ class PostService extends Service {
     }
     
     public function add($username,$post){
-        return $this -> repository -> add($username,$post);
+        $ip = AppService::getip();
+        return $this -> repository -> add($username,$post,$ip);
     }
     
     public function get($postid , $minpostid= 0, $foward = true){

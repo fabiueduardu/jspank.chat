@@ -1,20 +1,20 @@
 var app = angular.module('app', []);
 var app_var = {
-    version: 0.2,
+    version: 0.1,
     http_headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     message: {
-        error: 'there was an error, please try again later',
-        error_404: 'error, 404 not found',
-        error_500: 'error, 500 internal server error',
-        success: 'success',
+        messages: null,
         get: function (data) {
+            if (!app_var.message.messages)
+                return 'config, error';
+
             switch (data.status) {
                 case 404:
-                    return app_var.message.error_404;
+                    return app_var.message.messages.error_404;
                 case 500:
-                    return app_var.message.error_500;
+                    return app_var.message.messages.error_500;
                 default:
-                    return app_var.message.error;
+                    return app_var.message.messages.error;
             }
         }
     },
@@ -46,9 +46,18 @@ var app_var = {
 
 
 //### INIT GLOBAL
-app.controller('appCtrl', function ($scope, $location) {
+app.controller('appCtrl', function ($scope, $http, $location) {
     $scope.contacts = [];
     $scope.post_getting = false;
+
+    $http.get('config.json').then(function (result) {
+        var _host = location.protocol + '//' + location.host + '/';
+        $scope.new_host = result.data.apiService.replace('{host}', _host);
+        app_var.message.messages = result.data.messages;
+
+    }, function (result) {
+        $scope.message = app_var.message.get(result);
+    });
 
     $scope.submitTarget = function (target) {
         $scope.post_dbid = target.dbid;
@@ -64,6 +73,10 @@ app.controller('appCtrl', function ($scope, $location) {
         window.prompt("Copy to clipboard: Ctrl+C, Enter", $scope.post_urlshare);
     }
 
+    $scope.getStyle = function (value) {
+        return { 'background': '#' + app_var.color(app_var.hashCode(value)), 'color': '#FFF' };
+    }
+
     var search = $location.search();
     if (search.dbid) {
         var target = { name: search.name, dbid: search.dbid, host: search.host, username: search.username };
@@ -76,9 +89,8 @@ app.controller('appCtrl', function ($scope, $location) {
 app.directive('new', function () {
     var directive = {
         scope: true,
-        templateUrl: 'template/new.htm?vs=' + app_var.version,
+        templateUrl: 'contents/templates/new.htm?vs=' + app_var.version,
         controller: ['$scope', '$http', '$httpParamSerializer', function ($scope, $http, $httpParamSerializer) {
-            $scope.new_host = 'jspank.chat.php';
             $scope.new_username = null;
 
             $scope.submit = function (form) {
@@ -92,7 +104,7 @@ app.directive('new', function () {
                     form.isvalid = result.data.isvalid;
                     form.message = result.data.message;
 
-                    var target = { name: 'temp by ' + data.username, dbid: result.data.dbid, host: host, username: data.username };
+                    var target = { name: 'new > ' + data.username, dbid: result.data.dbid, host: host, username: data.username };
                     $scope.contacts.unshift(target);
                     $scope.submitTarget(target);
                 }, function (data) {
@@ -111,8 +123,9 @@ app.directive('new', function () {
 app.directive('me', function () {
     var directive = {
         scope: true,
-        templateUrl: 'template/me.htm?vs=' + app_var.version,
+        templateUrl: 'contents/templates/me.htm?vs=' + app_var.version,
         controller: ['$scope', '$http', function ($scope, $http) {
+
             $scope.submit = function (form) {
                 form.isvalid = false;
                 if (form.$invalid) return;
@@ -139,7 +152,7 @@ app.directive('me', function () {
 //### POST
 app.directive('post', function () {
     var directive = {
-        templateUrl: 'template/post.htm?vs=' + app_var.version,
+        templateUrl: 'contents/templates/post.htm?vs=' + app_var.version,
         controller: ['$scope', '$http', '$httpParamSerializer', function ($scope, $http, $httpParamSerializer) {
 
             $scope.submitFriend = function (form) {
@@ -197,7 +210,7 @@ app.directive('post', function () {
 app.directive('get', function () {
     var directive = {
         scope: true,
-        templateUrl: 'template/get.htm?vs=' + app_var.version,
+        templateUrl: 'contents/templates/get.htm?vs=' + app_var.version,
         controller: ['$scope', '$http', '$httpParamSerializer', '$interval', function ($scope, $http, $httpParamSerializer, $interval) {
             $scope.posts = [];
             $scope.users = [];
@@ -245,11 +258,11 @@ app.directive('get', function () {
             }
 
             $scope.getStyle = function (value) {
-                    return { 'background': '#' + app_var.color(app_var.hashCode(value)), 'color': '#FFF' };
+                return { 'background': '#' + app_var.color(app_var.hashCode(value)), 'color': '#FFF' };
             }
             $scope.gettingOld = function (form) {
                 $scope.getting(form, function (result) {
-                    $scope.hasOld = result.data.posts.length == 0 ? true : false;
+                    $scope.hasOld = result.data.isvalid == true && result.data.posts.length == 0 ? true : false;
                 }, false);
             }
 
@@ -302,7 +315,7 @@ app.directive("required", function () {
     return {
         scope: { key: '@' },
         restrict: "E",
-        templateUrl: 'template/required.htm?vs=' + app_var.version,
+        templateUrl: 'contents/templates/required.htm?vs=' + app_var.version,
         require: "^form",
         link: function (scope, element, attrs, form) {
             scope.form = form;
@@ -315,7 +328,7 @@ app.directive("alert", function () {
     return {
         scope: { key: '@' },
         restrict: "E",
-        templateUrl: 'template/alert.htm?vs=' + app_var.version,
+        templateUrl: 'contents/templates/alert.htm?vs=' + app_var.version,
         require: "^form",
         link: function (scope, element, attrs, form) {
             scope.form = form;

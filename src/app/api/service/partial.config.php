@@ -1,4 +1,5 @@
 <?php
+header('Access-Control-Allow-Origin: *');
 ini_set('display_errors','1');
 date_default_timezone_set('UTC');
 set_error_handler('error_handler');
