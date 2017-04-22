@@ -2,6 +2,7 @@
     <span class="glyphicon glyphicon-th-list"></span> me</a>
     <form class="form-vertical" name="formMe" novalidate ng-submit="submit(formMe)">
         <div class="form-group has-feedback">
+              <label ng-show="host">host</label>
             <input required type="text" class="form-control" placeholder="host" ng-model="host">
             <required data-key="host"></required>
         </div>

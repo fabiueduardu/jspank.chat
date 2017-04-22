@@ -33,7 +33,7 @@ class AppRepository extends  Repository {
     
     private $queries = array(
     'setting_create' => 'CREATE TABLE IF NOT EXISTS setting (settingid INTEGER PRIMARY KEY NOT NULL,name VARCHAR(100) NOT NULL, description VARCHAR(255) NOT NULL, datecreate DATETIME NOT NULL);'
-    ,'user_create' => 'CREATE TABLE IF NOT EXISTS user (username VARCHAR(100) PRIMARY KEY NOT NULL,active BOOLEAN NOT NULL DEFAULT 1, datecreate DATETIME NOT NULL,postid INTEGER NOT NULL,ip VARCHAR(20) NOT NULL);'
+    ,'user_create' => 'CREATE TABLE IF NOT EXISTS user (userid VARCHAR(5) PRIMARY KEY NOT NULL, username VARCHAR(100) NOT NULL,username_getter VARCHAR(100), active BOOLEAN NOT NULL DEFAULT 1, datecreate DATETIME NOT NULL,postid INTEGER NOT NULL,ip VARCHAR(20) NOT NULL,  FOREIGN KEY(username_getter) REFERENCES user(username));'
     ,'post_create' =>'CREATE TABLE IF NOT EXISTS post (postid INTEGER PRIMARY KEY AUTOINCREMENT , post VARCHAR(8000) NOT NULL, datecreate DATETIME NOT NULL, username VARCHAR(100) NOT NULL,ip VARCHAR(20) NOT NULL,  FOREIGN KEY(username) REFERENCES user(username));'
     );
     
@@ -66,26 +66,27 @@ class SettingRepository extends  Repository {
 class UserRepository extends  Repository {
     
     private $queries = array(
-     'user_insert'=> 'INSERT INTO user(username,postid,ip,datecreate)  values(:username,:postid,:ip,julianday(\'now\'));'
+     'user_insert'=> 'INSERT INTO user(userid,username,postid,ip,datecreate,username_getter)  values(:userid,:username,:postid,:ip,julianday(\'now\'),:username_getter);'
     ,'user_update_active'=> 'UPDATE user  SET active = :active WHERE username = :username'
-    ,'user_select_target'=> 'SELECT username,active,postid,strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) datecreate FROM user WHERE username = :username and (:active is null or active = :active);'
-    ,'user_select'=> 'SELECT username,active,postid,strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) datecreate FROM user WHERE (:active is null or active = :active) order by username;'
+    ,'user_select_target'=> 'SELECT username,active,postid,strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) datecreate FROM user WHERE (username = :username OR userid = :userid) and (:active is null or active = :active);'
+    ,'user_select'=> 'SELECT userid,username,active,postid,strftime(\'%d/%m/%Y %H:%M:%S\',datecreate) datecreate FROM user WHERE (:active is null or active = :active) order by username;'
     );
     
     function __construct($db){
         parent::__construct($db);
     }
     
-    public function add($username,$postid = 0, $ip = null){
-        return $this -> executeNonQuery($this -> queries["user_insert"] ,  array(':username' => $username, ':postid'=>$postid,':ip' => $ip));
+    public function add($username,$postid = 0, $ip = null,$username_getter=null){
+        $userid = substr(AppService::newguid(),0,5);
+        return $this -> executeNonQuery($this -> queries["user_insert"] ,  array(':userid' => $userid,':username' => $username, ':postid'=>$postid,':ip' => $ip, ':username_getter' => $username_getter));
     }
     
     public function update_active($username,$active){
         return $this -> executeNonQuery($this -> queries["user_update_active"] ,  array(':username' => $username, ':active' => $active));
     }
     
-    public function get($username , $active = true){
-        return $this -> executeReader($this -> queries["user_select_target"] ,  array(':username' => $username, ':active' => $active));
+    public function get($username , $active = true , $userid = null){
+        return $this -> executeReader($this -> queries["user_select_target"] ,  array(':username' => $username, ':active' => $active, ':userid' => $userid));
     }
     
     public function getAll($active = true){
@@ -142,8 +143,7 @@ class AppService extends Service {
     ,'error_500' => 'error, 500 internal server error'
     ,'success_user_reactivated' => 'success, user reactivated'
     ,'success_user_inactivated' => 'success, user inactivated'
-    ,'user_already_exists' => 'user already exists'
-    
+    ,'user_already_exists' => 'user already exists'    
     ,'success_pt-BR' => 'sucesso'
     );
     
@@ -221,17 +221,17 @@ class UserService extends Service {
         $this -> repository = new UserRepository($this -> db);
     }
     
-    public function add($username,$postid=0){
+    public function add($username,$postid=0,$username_getter=null){
          $ip = AppService::getip();
-        return $this -> repository -> add($username, $postid, $ip);
+        return $this -> repository -> add($username, $postid, $ip,$username_getter);
     }
     
     public function update_active($username,$active){
         return $this -> repository -> update_active($username, $active);
     }
     
-    public function get($username , $active = true){
-        return $this -> repository -> get($username, $active);
+    public function get($username , $active = true, $userid = null){
+        return $this -> repository -> get($username, $active, $userid);
     }
     
     public function getAll($active = true){

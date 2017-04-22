@@ -2,10 +2,12 @@
     <span class="glyphicon glyphicon-plus"></span> new</a>
     <form class="form-vertical" name="formNew" novalidate ng-submit="submit(formNew)">
         <div class="form-group has-feedback">
+             <label ng-show="new_username">user name</label>
             <input required type="text" class="form-control" placeholder="user name" name="new_username" ng-model="new_username"  maxlength="20">
             <required data-key="username"></required>
         </div>
         <div class="form-group has-feedback">
+             <label ng-show="new_host">host</label>
             <input required type="text" class="form-control" placeholder="host" name="new_host" ng-model="new_host" >
             <required data-key="host"></required>
         </div>

@@ -78,6 +78,7 @@ app.controller('appCtrl', function ($scope, $http, $location) {
     }
 
     var search = $location.search();
+
     if (search.dbid) {
         var target = { name: search.name, dbid: search.dbid, host: search.host, username: search.username };
         $scope.contacts.unshift(target);
@@ -219,7 +220,7 @@ app.directive('get', function () {
             var gettingInterval = null;
 
             $scope.submitFriendToShare = function (form, username) {
-                var post_urlshare = '//' + location.host + '/' + location.pathname + '#?host=' + $scope.post_host + '&dbid=' + $scope.post_dbid + '&name=' + $scope.post_name + '&username=' + username;
+                var post_urlshare = '//' + location.host + '/' + location.pathname + '#?host=' + $scope.post_host + '&dbid=' + $scope.post_dbid + '&username=' + username;
                 window.prompt("Copy to clipboard: Ctrl+C, Enter", post_urlshare);
             }
 

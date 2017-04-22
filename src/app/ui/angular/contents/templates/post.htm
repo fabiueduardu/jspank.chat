@@ -3,12 +3,14 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group has-feedback">
+                    <label ng-show="post_host">host</label>
                     <input required type="text" class="form-control" placeholder="host" name="post_host" ng-model="post_host">
                     <required data-key="host"></required>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group has-feedback">
+                    <label ng-show="post_dbid">dbid</label>
                     <input required type="text" class="form-control" placeholder="dbid" name="post_dbid" ng-model="post_dbid" maxlength="100">
                     <required data-key="dbid"></required>
                 </div>
@@ -17,11 +19,13 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group has-feedback">
+                    <label ng-show="post_username">user name</label>
                     <input required type="text" class="form-control" placeholder="user name" name="post_username" ng-model="post_username" maxlength="20">
                     <required data-key="username"></required>
                 </div>
             </div>
             <div class="col-md-6">
+                 <label ng-show="post_username">user name to invite</label>
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="user name to invite" name="post_username_add" ng-model="post_username_add"
                         maxlength="20">
@@ -34,6 +38,7 @@
         </div>
         <div class="form-group visible-xs"></div>
         <div class="form-group has-feedback">
+             <label ng-show="post_post">post</label>
             <textarea required type="text" class="form-control" rows="2" placeholder="post" name="post_post" ng-model="post_post"></textarea>
             <required data-key="post"></required>
         </div>

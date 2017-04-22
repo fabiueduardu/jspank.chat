@@ -17,6 +17,9 @@ switch ($method) {
     case ('me'):
         include 'service/me.php';
         break;
+    case ('meto'):
+        include 'service/meto.php';
+        break;
     default:
         echo json_encode(array ('isvalid'=> false,'message' => 'error, 405 method not allowed'));
 }
